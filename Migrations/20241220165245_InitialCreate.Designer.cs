@@ -12,7 +12,7 @@ using ZombieLynxPortal.Data;
 namespace ZombieLynxPortal.Migrations
 {
     [DbContext(typeof(ZombieLynxPortalDbContext))]
-    [Migration("20241219152857_InitialCreate")]
+    [Migration("20241220165245_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -152,13 +152,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4aab2b2f-6869-4353-a54a-99975f803779",
+                            ConcurrencyStamp = "c8a48e43-2ead-4997-81af-9dea11c50576",
                             Email = "admina@strator.comx",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEJv1tzpSSghrBCJ5HFs88Z8uX+XGQwdfbDfyGWHrMkNu62huwAVbPFxNF6OAtHqzPQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBOzoOEtKjUW2q7s4hVEBZy/grVshqXRLxIiC46o1ipRCKnz1fCTofGiWVFX03enDQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0a9624e3-29dc-47a2-aa59-f723e66b6c17",
+                            SecurityStamp = "0e403194-53cc-4941-8835-73d5f21389a4",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });
@@ -252,6 +252,181 @@ namespace ZombieLynxPortal.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ZombieLynxPortal.Models.AdminTicket", b =>
+                {
+                    b.Property<int>("AdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("AdminId", "TicketId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("AdminTickets");
+
+                    b.HasData(
+                        new
+                        {
+                            AdminId = 1,
+                            TicketId = 1,
+                            AssignedAt = new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(6022)
+                        });
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Messages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Content = "This issue is urgent.",
+                            CreatedAt = new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(6007),
+                            TicketId = 1,
+                            UserId = 1
+                        });
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int[]>("Type")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            SentAt = new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(6038),
+                            TicketId = 1,
+                            Type = new[] { 0, 1 },
+                            UserId = 1
+                        });
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Categroy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Game")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Server")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ZombieMemberId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ZombieMemberId");
+
+                    b.ToTable("Tickets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Categroy = "Gameplay",
+                            CreatedAt = new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(5991),
+                            Description = "My character is stuck!",
+                            Game = "Game A",
+                            Server = "NA-East",
+                            Status = "Open",
+                            Subject = "Bug Report",
+                            UpdatedAt = new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(5992),
+                            UserId = 1,
+                            ZombieMemberId = 1
+                        });
+                });
+
             modelBuilder.Entity("ZombieLynxPortal.Models.UserProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -290,6 +465,45 @@ namespace ZombieLynxPortal.Migrations
                             FirstName = "Admina",
                             IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             LastName = "Strator"
+                        });
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.ZombieMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DiscordId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EosId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SteamId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ZombieMembers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DiscordId = "123456789",
+                            EosId = "eos12345",
+                            Role = "Admin",
+                            SteamId = "steam12345"
                         });
                 });
 
@@ -342,6 +556,80 @@ namespace ZombieLynxPortal.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.AdminTicket", b =>
+                {
+                    b.HasOne("ZombieLynxPortal.Models.ZombieMember", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZombieLynxPortal.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.Message", b =>
+                {
+                    b.HasOne("ZombieLynxPortal.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZombieLynxPortal.Models.ZombieMember", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.Notification", b =>
+                {
+                    b.HasOne("ZombieLynxPortal.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZombieLynxPortal.Models.ZombieMember", "ZombieMember")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("ZombieMember");
+                });
+
+            modelBuilder.Entity("ZombieLynxPortal.Models.Ticket", b =>
+                {
+                    b.HasOne("ZombieLynxPortal.Models.ZombieMember", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZombieLynxPortal.Models.ZombieMember", "ZombieMember")
+                        .WithMany()
+                        .HasForeignKey("ZombieMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ZombieMember");
                 });
 
             modelBuilder.Entity("ZombieLynxPortal.Models.UserProfile", b =>
