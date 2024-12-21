@@ -13,8 +13,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
       console.log("Logged in user:", loggedInUser);
       getUserProfiles()
         .then((profiles) => {
-          console.log("Fetched profiles:", profiles); // Debugging
-          // Check if profiles is an array or an object
+          console.log("Fetched profiles:", profiles);
           if (Array.isArray(profiles)) {
             const profile = profiles.find(
               (p) =>
@@ -24,7 +23,6 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
             setUserProfile(profile);
           } else {
             console.log("Fetched a single profile:", profiles);
-            // If the API returns a single profile object
             if (
               profiles.identityUserId === loggedInUser.id ||
               profiles.id === loggedInUser.id
@@ -41,35 +39,40 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
     }
   }, [loggedInUser]);
 
+  // eslint-disable-next-line no-unused-vars
   const toggleNavbar = () => setOpen(!open);
 
   return (
-    <nav className="navbar navbar-expand-lg fixed-top p-0 mx-auto w-100 zlg-nav-bar">
-      <div className="navbar-expand-lg navbar mx-auto col-6">
+    <nav className="navbar navbar-expand-lg fixed-top p-0 mx-auto w-100 zlg-nav-bar bg-dark">
+      <div className="container d-flex justify-content-between align-items-center">
+        {/* Logo */}
         <RRNavLink className="navbar-brand" to="/">
-          <img className="zlg-logo" src="/zlg-logo.png" alt="" />
+          <img
+            className="zlg-logo"
+            src="/zlg-logo.png"
+            alt="Zombie Lynx Gaming"
+          />
         </RRNavLink>
-        {loggedInUser ? (
-          <>
-            <button
-              className="navbar-toggler"
-              type="button"
-              aria-controls="navbarNav"
-              aria-expanded={open}
-              aria-label="Toggle navigation"
-              onClick={toggleNavbar}
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className={`collapse navbar-collapse ${open ? "show" : ""}`}>
-              <ul className="navbar-nav me-auto"></ul>
-            </div>
+
+        {/* Links Section */}
+        <div className="d-flex justify-content-center flex-grow-1">
+          <RRNavLink className="nav-link text-white mx-3" to="/">
+            Open Tickets
+          </RRNavLink>
+          <RRNavLink className="nav-link text-white mx-3" to="/closed-tickets">
+            Closed Tickets
+          </RRNavLink>
+        </div>
+
+        {/* Email and Logout Section */}
+        {loggedInUser && (
+          <div className="d-flex align-items-center">
             {userProfile ? (
-              <span className="navbar-text me-3">
-                {userProfile.firstName} {userProfile.lastName}
+              <span className="navbar-text me-3 text-white">
+                {userProfile.email}
               </span>
             ) : (
-              <span className="navbar-text me-3">Loading...</span>
+              <span className="navbar-text me-3 text-white">Loading...</span>
             )}
             <button
               className="btn btn-primary"
@@ -84,16 +87,6 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
             >
               Logout
             </button>
-          </>
-        ) : (
-          <div className="collapse navbar-collapse">
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <RRNavLink className="nav-link" to="/login">
-                  <button className="btn btn-primary">Login</button>
-                </RRNavLink>
-              </li>
-            </ul>
           </div>
         )}
       </div>
