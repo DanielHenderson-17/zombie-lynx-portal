@@ -56,12 +56,12 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
 
         {/* Links Section */}
         <div className="d-flex justify-content-center flex-grow-1">
-          <RRNavLink className="nav-link text-white mx-3" to="/">
+          {/* <RRNavLink className="nav-link text-white mx-3" to="/">
             Open Tickets
           </RRNavLink>
           <RRNavLink className="nav-link text-white mx-3" to="/closed-tickets">
             Closed Tickets
-          </RRNavLink>
+          </RRNavLink> */}
         </div>
 
         {/* Email and Logout Section */}

@@ -1,3 +1,15 @@
 .tickets {
   width: 100% !important;
 }
+
+.ticket-button {
+  width: 75px;
+}
+
+.ticket-id {
+  bottom: 5px;
+  right: -10px;
+  width: 100px;
+  font-size: 10px;
+  color: #6c757d;
+}

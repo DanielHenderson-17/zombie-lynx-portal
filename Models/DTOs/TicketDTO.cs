@@ -16,5 +16,7 @@ namespace ZombieLynxPortal.Models.DTOs
 
         public int UserProfileId { get; set; }
         public UserProfile UserProfile { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

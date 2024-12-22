@@ -27,37 +27,36 @@ public class TicketsController : ControllerBase
         var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
 
         var ticketsQuery = _dbContext.Tickets
-            .Where(t => t.Status == "Open");
+            .Where(t => t.Status == "Open")
+            .Select(t => new
+            {
+                t.Id,
+                t.Subject,
+                t.Category,
+                t.Game,
+                t.Server,
+                t.Description,
+                t.Status,
+                t.CreatedAt,
+                t.UpdatedAt,
+                AssignedUsers = _dbContext.UserTickets
+                    .Where(ut => ut.TicketId == t.Id)
+                    .Select(ut => new
+                    {
+                        ut.UserProfile.FirstName,
+                        ut.UserProfile.LastName
+                    })
+                    .ToList()
+            });
 
         if (!userRoles.Contains("Admin") && userProfile != null)
         {
             ticketsQuery = ticketsQuery
-                .Join(
-                    _dbContext.UserTickets,
-                    ticket => ticket.Id,
-                    userTicket => userTicket.TicketId,
-                    (ticket, userTicket) => new { ticket, userTicket }
-                )
-                .Where(joined => joined.userTicket.UserProfileId == userProfile.Id)
-                .Select(joined => joined.ticket);
+                .Where(t => _dbContext.UserTickets
+                    .Any(ut => ut.TicketId == t.Id && ut.UserProfileId == userProfile.Id));
         }
 
-        var tickets = ticketsQuery
-            .Select(t => new TicketDTO
-            {
-                Id = t.Id,
-                Subject = t.Subject,
-                Category = t.Category,
-                Game = t.Game,
-                Server = t.Server,
-                Description = t.Description,
-                Status = t.Status,
-                CreatedAt = t.CreatedAt,
-                UpdatedAt = t.UpdatedAt
-            })
-            .ToList();
-
-        return Ok(tickets);
+        return Ok(ticketsQuery.ToList());
     }
 
     [HttpGet("closed")]
@@ -69,37 +68,36 @@ public class TicketsController : ControllerBase
         var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
 
         var ticketsQuery = _dbContext.Tickets
-            .Where(t => t.Status == "Closed");
+            .Where(t => t.Status == "Closed")
+            .Select(t => new
+            {
+                t.Id,
+                t.Subject,
+                t.Category,
+                t.Game,
+                t.Server,
+                t.Description,
+                t.Status,
+                t.CreatedAt,
+                t.UpdatedAt,
+                AssignedUsers = _dbContext.UserTickets
+                    .Where(ut => ut.TicketId == t.Id)
+                    .Select(ut => new
+                    {
+                        ut.UserProfile.FirstName,
+                        ut.UserProfile.LastName
+                    })
+                    .ToList()
+            });
 
         if (!userRoles.Contains("Admin") && userProfile != null)
         {
             ticketsQuery = ticketsQuery
-                .Join(
-                    _dbContext.UserTickets,
-                    ticket => ticket.Id,
-                    userTicket => userTicket.TicketId,
-                    (ticket, userTicket) => new { ticket, userTicket }
-                )
-                .Where(joined => joined.userTicket.UserProfileId == userProfile.Id)
-                .Select(joined => joined.ticket);
+                .Where(t => _dbContext.UserTickets
+                    .Any(ut => ut.TicketId == t.Id && ut.UserProfileId == userProfile.Id));
         }
 
-        var tickets = ticketsQuery
-            .Select(t => new TicketDTO
-            {
-                Id = t.Id,
-                Subject = t.Subject,
-                Category = t.Category,
-                Game = t.Game,
-                Server = t.Server,
-                Description = t.Description,
-                Status = t.Status,
-                CreatedAt = t.CreatedAt,
-                UpdatedAt = t.UpdatedAt
-            })
-            .ToList();
-
-        return Ok(tickets);
+        return Ok(ticketsQuery.ToList());
     }
 
     [HttpPut("{id}/restore")]
