@@ -18,7 +18,6 @@ public class TicketsController : ControllerBase
         _dbContext = context;
     }
 
-    // Get open tickets for the active user or all tickets if the user is an admin
     [HttpGet("open")]
     [Authorize]
     public IActionResult GetOpenTickets()
@@ -32,7 +31,6 @@ public class TicketsController : ControllerBase
 
         if (!userRoles.Contains("Admin"))
         {
-            // Filter tickets for the logged-in user only
             ticketsQuery = ticketsQuery.Where(t => t.UserId == int.Parse(userId));
         }
 
@@ -55,7 +53,61 @@ public class TicketsController : ControllerBase
         return Ok(tickets);
     }
 
-    // Create a new ticket
+    [HttpGet("closed")]
+    [Authorize]
+    public IActionResult GetClosedTickets()
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userRoles = User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(r => r.Value).ToList();
+
+        var ticketsQuery = _dbContext.Tickets
+            .Include(t => t.ZombieMember)
+            .Where(t => t.Status == "Closed");
+
+        if (!userRoles.Contains("Admin"))
+        {
+            ticketsQuery = ticketsQuery.Where(t => t.UserId == int.Parse(userId));
+        }
+
+        var tickets = ticketsQuery
+            .Select(t => new TicketDTO
+            {
+                Id = t.Id,
+                UserId = t.UserId,
+                Subject = t.Subject,
+                Categroy = t.Categroy,
+                Game = t.Game,
+                Server = t.Server,
+                Description = t.Description,
+                Status = t.Status,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt
+            })
+            .ToList();
+
+        return Ok(tickets);
+    }
+
+
+    [HttpPut("{id}/restore")]
+    [Authorize]
+    public IActionResult RestoreTicket(int id)
+    {
+        var ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
+
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        ticket.Status = "Open";
+        ticket.UpdatedAt = DateTime.Now;
+
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
+
     [HttpPost]
     [Authorize]
     public IActionResult CreateTicket(TicketDTO ticketDTO)
@@ -81,7 +133,6 @@ public class TicketsController : ControllerBase
         return Created($"/api/tickets/{ticket.Id}", ticket);
     }
 
-    // Update a ticket
     [HttpPut("{id}")]
     [Authorize]
     public IActionResult UpdateTicket(int id, TicketDTO ticketDTO)
@@ -98,7 +149,6 @@ public class TicketsController : ControllerBase
             return BadRequest();
         }
 
-        // Only update editable fields
         ticketToUpdate.Subject = ticketDTO.Subject;
         ticketToUpdate.Description = ticketDTO.Description;
         ticketToUpdate.Game = ticketDTO.Game;
@@ -111,7 +161,6 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
-    // Close a ticket
     [HttpPut("{id}/close")]
     [Authorize]
     public IActionResult CloseTicket(int id)
@@ -131,7 +180,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
-    // Delete a ticket
+
     [HttpDelete("{id}")]
     [Authorize]
     public IActionResult DeleteTicket(int id)

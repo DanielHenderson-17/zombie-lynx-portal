@@ -1,7 +1,20 @@
 const _apiUrl = "/api/tickets";
 
 export const getOpenTickets = () => {
-  return fetch(_apiUrl + "/open").then((res) => res.json());
+  return fetch("/api/tickets/open").then((res) => res.json());
+};
+
+export const getClosedTickets = () => {
+  return fetch("/api/tickets/closed").then((res) => res.json());
+};
+
+export const restoreTicket = (ticketId) => {
+  return fetch(`/api/tickets/${ticketId}/restore`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 export const createTicket = (ticket) => {
