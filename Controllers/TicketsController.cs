@@ -22,25 +22,32 @@ public class TicketsController : ControllerBase
     [Authorize]
     public IActionResult GetOpenTickets()
     {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var identityUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         var userRoles = User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(r => r.Value).ToList();
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
 
         var ticketsQuery = _dbContext.Tickets
-            .Include(t => t.ZombieMember)
             .Where(t => t.Status == "Open");
 
-        if (!userRoles.Contains("Admin"))
+        if (!userRoles.Contains("Admin") && userProfile != null)
         {
-            ticketsQuery = ticketsQuery.Where(t => t.UserId == int.Parse(userId));
+            ticketsQuery = ticketsQuery
+                .Join(
+                    _dbContext.UserTickets,
+                    ticket => ticket.Id,
+                    userTicket => userTicket.TicketId,
+                    (ticket, userTicket) => new { ticket, userTicket }
+                )
+                .Where(joined => joined.userTicket.UserProfileId == userProfile.Id)
+                .Select(joined => joined.ticket);
         }
 
         var tickets = ticketsQuery
             .Select(t => new TicketDTO
             {
                 Id = t.Id,
-                UserId = t.UserId,
                 Subject = t.Subject,
-                Categroy = t.Categroy,
+                Category = t.Category,
                 Game = t.Game,
                 Server = t.Server,
                 Description = t.Description,
@@ -57,25 +64,32 @@ public class TicketsController : ControllerBase
     [Authorize]
     public IActionResult GetClosedTickets()
     {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var identityUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         var userRoles = User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(r => r.Value).ToList();
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
 
         var ticketsQuery = _dbContext.Tickets
-            .Include(t => t.ZombieMember)
             .Where(t => t.Status == "Closed");
 
-        if (!userRoles.Contains("Admin"))
+        if (!userRoles.Contains("Admin") && userProfile != null)
         {
-            ticketsQuery = ticketsQuery.Where(t => t.UserId == int.Parse(userId));
+            ticketsQuery = ticketsQuery
+                .Join(
+                    _dbContext.UserTickets,
+                    ticket => ticket.Id,
+                    userTicket => userTicket.TicketId,
+                    (ticket, userTicket) => new { ticket, userTicket }
+                )
+                .Where(joined => joined.userTicket.UserProfileId == userProfile.Id)
+                .Select(joined => joined.ticket);
         }
 
         var tickets = ticketsQuery
             .Select(t => new TicketDTO
             {
                 Id = t.Id,
-                UserId = t.UserId,
                 Subject = t.Subject,
-                Categroy = t.Categroy,
+                Category = t.Category,
                 Game = t.Game,
                 Server = t.Server,
                 Description = t.Description,
@@ -87,7 +101,6 @@ public class TicketsController : ControllerBase
 
         return Ok(tickets);
     }
-
 
     [HttpPut("{id}/restore")]
     [Authorize]
@@ -112,13 +125,18 @@ public class TicketsController : ControllerBase
     [Authorize]
     public IActionResult CreateTicket(TicketDTO ticketDTO)
     {
-        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+        var identityUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
+
+        if (userProfile == null)
+        {
+            return BadRequest("UserProfile not found.");
+        }
 
         var ticket = new Ticket
         {
-            UserId = userId,
             Subject = ticketDTO.Subject,
-            Categroy = ticketDTO.Categroy,
+            Category = ticketDTO.Category,
             Game = ticketDTO.Game,
             Server = ticketDTO.Server,
             Description = ticketDTO.Description,
@@ -153,7 +171,7 @@ public class TicketsController : ControllerBase
         ticketToUpdate.Description = ticketDTO.Description;
         ticketToUpdate.Game = ticketDTO.Game;
         ticketToUpdate.Server = ticketDTO.Server;
-        ticketToUpdate.Categroy = ticketDTO.Categroy;
+        ticketToUpdate.Category = ticketDTO.Category;
         ticketToUpdate.UpdatedAt = DateTime.Now;
 
         _dbContext.SaveChanges();
@@ -179,7 +197,6 @@ public class TicketsController : ControllerBase
 
         return NoContent();
     }
-
 
     [HttpDelete("{id}")]
     [Authorize]

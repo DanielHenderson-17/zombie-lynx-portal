@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -49,22 +50,6 @@ namespace ZombieLynxPortal.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ZombieMembers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DiscordId = table.Column<string>(type: "text", nullable: false),
-                    EosId = table.Column<string>(type: "text", nullable: false),
-                    SteamId = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ZombieMembers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -201,30 +186,23 @@ namespace ZombieLynxPortal.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
                     Subject = table.Column<string>(type: "text", nullable: false),
-                    Categroy = table.Column<string>(type: "text", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: false),
                     Game = table.Column<string>(type: "text", nullable: false),
                     Server = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ZombieMemberId = table.Column<int>(type: "integer", nullable: false)
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_ZombieMembers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "ZombieMembers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Tickets_ZombieMembers_ZombieMemberId",
-                        column: x => x.ZombieMemberId,
-                        principalTable: "ZombieMembers",
+                        name: "FK_Tickets_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -247,9 +225,9 @@ namespace ZombieLynxPortal.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AdminTickets_ZombieMembers_AdminId",
+                        name: "FK_AdminTickets_UserProfiles_AdminId",
                         column: x => x.AdminId,
-                        principalTable: "ZombieMembers",
+                        principalTable: "UserProfiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -261,7 +239,7 @@ namespace ZombieLynxPortal.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TicketId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -275,9 +253,9 @@ namespace ZombieLynxPortal.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Messages_ZombieMembers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "ZombieMembers",
+                        name: "FK_Messages_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -289,8 +267,8 @@ namespace ZombieLynxPortal.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TicketId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<int[]>(type: "integer[]", nullable: false),
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<List<int>>(type: "integer[]", nullable: false),
                     SentAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -303,9 +281,34 @@ namespace ZombieLynxPortal.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Notifications_ZombieMembers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "ZombieMembers",
+                        name: "FK_Notifications_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTickets",
+                columns: table => new
+                {
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false),
+                    TicketId = table.Column<int>(type: "integer", nullable: false),
+                    AssignedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTickets", x => new { x.UserProfileId, x.TicketId });
+                    table.ForeignKey(
+                        name: "FK_UserTickets_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserTickets_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -318,12 +321,7 @@ namespace ZombieLynxPortal.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "c8a48e43-2ead-4997-81af-9dea11c50576", "admina@strator.comx", false, false, null, null, null, "AQAAAAIAAYagAAAAEBOzoOEtKjUW2q7s4hVEBZy/grVshqXRLxIiC46o1ipRCKnz1fCTofGiWVFX03enDQ==", null, false, "0e403194-53cc-4941-8835-73d5f21389a4", false, "Administrator" });
-
-            migrationBuilder.InsertData(
-                table: "ZombieMembers",
-                columns: new[] { "Id", "DiscordId", "EosId", "Role", "SteamId" },
-                values: new object[] { 1, "123456789", "eos12345", "Admin", "steam12345" });
+                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "5ae3d5a8-6870-438c-b6d7-4d2a0a7bc501", "admina@strator.comx", false, false, null, null, null, "AQAAAAIAAYagAAAAEODCFY9nGSBnV9OMcX5L1STNnFUxmI2l+3WAmmp6yuXYovZeNGrDZTPpL3kxyemmfA==", null, false, "b1c66abd-176f-4c5c-8400-be5666e8c80f", false, "Administrator" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -331,29 +329,29 @@ namespace ZombieLynxPortal.Migrations
                 values: new object[] { "c3aaeb97-d2ba-4a53-a521-4eea61e59b35", "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f" });
 
             migrationBuilder.InsertData(
-                table: "Tickets",
-                columns: new[] { "Id", "Categroy", "CreatedAt", "Description", "Game", "Server", "Status", "Subject", "UpdatedAt", "UserId", "ZombieMemberId" },
-                values: new object[] { 1, "Gameplay", new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(5991), "My character is stuck!", "Game A", "NA-East", "Open", "Bug Report", new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(5992), 1, 1 });
-
-            migrationBuilder.InsertData(
                 table: "UserProfiles",
                 columns: new[] { "Id", "Address", "FirstName", "IdentityUserId", "LastName" },
                 values: new object[] { 1, "101 Main Street", "Admina", "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", "Strator" });
 
             migrationBuilder.InsertData(
+                table: "Tickets",
+                columns: new[] { "Id", "Category", "CreatedAt", "Description", "Game", "Server", "Status", "Subject", "UpdatedAt", "UserProfileId" },
+                values: new object[] { 1, "Gameplay", new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(432), "My character is stuck!", "Game A", "NA-East", "Open", "Bug Report", new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(433), 1 });
+
+            migrationBuilder.InsertData(
                 table: "AdminTickets",
                 columns: new[] { "AdminId", "TicketId", "AssignedAt" },
-                values: new object[] { 1, 1, new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(6022) });
+                values: new object[] { 1, 1, new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(500) });
 
             migrationBuilder.InsertData(
                 table: "Messages",
-                columns: new[] { "Id", "Content", "CreatedAt", "TicketId", "UserId" },
-                values: new object[] { 1, "This issue is urgent.", new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(6007), 1, 1 });
+                columns: new[] { "Id", "Content", "CreatedAt", "TicketId", "UserProfileId" },
+                values: new object[] { 1, "This issue is urgent.", new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(479), 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "Notifications",
-                columns: new[] { "Id", "SentAt", "TicketId", "Type", "UserId" },
-                values: new object[] { 1, new DateTime(2024, 12, 20, 16, 52, 45, 45, DateTimeKind.Utc).AddTicks(6038), 1, new[] { 0, 1 }, 1 });
+                columns: new[] { "Id", "SentAt", "TicketId", "Type", "UserProfileId" },
+                values: new object[] { 1, new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(518), 1, new List<int> { 0, 1 }, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdminTickets_TicketId",
@@ -403,9 +401,9 @@ namespace ZombieLynxPortal.Migrations
                 column: "TicketId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_UserId",
+                name: "IX_Messages_UserProfileId",
                 table: "Messages",
-                column: "UserId");
+                column: "UserProfileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_TicketId",
@@ -413,24 +411,24 @@ namespace ZombieLynxPortal.Migrations
                 column: "TicketId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_UserId",
+                name: "IX_Notifications_UserProfileId",
                 table: "Notifications",
-                column: "UserId");
+                column: "UserProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_UserId",
+                name: "IX_Tickets_UserProfileId",
                 table: "Tickets",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tickets_ZombieMemberId",
-                table: "Tickets",
-                column: "ZombieMemberId");
+                column: "UserProfileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_IdentityUserId",
                 table: "UserProfiles",
                 column: "IdentityUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTickets_TicketId",
+                table: "UserTickets",
+                column: "TicketId");
         }
 
         /// <inheritdoc />
@@ -461,7 +459,7 @@ namespace ZombieLynxPortal.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "UserProfiles");
+                name: "UserTickets");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -470,10 +468,10 @@ namespace ZombieLynxPortal.Migrations
                 name: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "UserProfiles");
 
             migrationBuilder.DropTable(
-                name: "ZombieMembers");
+                name: "AspNetUsers");
         }
     }
 }

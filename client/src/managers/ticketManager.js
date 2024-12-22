@@ -1,11 +1,31 @@
 const _apiUrl = "/api/tickets";
 
 export const getOpenTickets = () => {
-  return fetch("/api/tickets/open").then((res) => res.json());
+  return fetch("/api/tickets/open")
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching open tickets:", error);
+      throw error;
+    });
 };
 
 export const getClosedTickets = () => {
-  return fetch("/api/tickets/closed").then((res) => res.json());
+  return fetch("/api/tickets/closed")
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching closed tickets:", error);
+      throw error;
+    });
 };
 
 export const restoreTicket = (ticketId) => {

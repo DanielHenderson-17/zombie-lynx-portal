@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace ZombieLynxPortal.Models.DTOs;
 
-public class AdminTicketDTO
+public class UserTicketDTO
 {
-    public int AdminId { get; set; }
-    public UserProfile Admin { get; set; }
+    public int UserProfileId { get; set; }
+    public UserProfile UserProfile { get; set; }
 
     public int TicketId { get; set; }
     public Ticket Ticket { get; set; }

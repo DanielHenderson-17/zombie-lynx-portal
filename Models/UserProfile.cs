@@ -10,7 +10,8 @@ public class UserProfile
     public string Address { get; set; }
 
     public string IdentityUserId { get; set; }
-
     public IdentityUser IdentityUser { get; set; }
 
+    // Navigation property for the many-to-many relationship
+    public List<UserTicket> UserTickets { get; set; }
 }

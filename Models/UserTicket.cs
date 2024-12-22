@@ -1,9 +1,9 @@
 namespace ZombieLynxPortal.Models;
 
-public class AdminTicket
+public class UserTicket
 {
-    public int AdminId { get; set; }
-    public UserProfile Admin { get; set; }
+    public int UserProfileId { get; set; }
+    public UserProfile UserProfile { get; set; }
 
     public int TicketId { get; set; }
     public Ticket Ticket { get; set; }
