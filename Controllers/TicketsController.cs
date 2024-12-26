@@ -100,89 +100,11 @@ public class TicketsController : ControllerBase
         return Ok(ticketsQuery.ToList());
     }
 
-    [HttpPut("{id}/restore")]
-    [Authorize]
-    public IActionResult RestoreTicket(int id)
-    {
-        var ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
-
-        if (ticket == null)
-        {
-            return NotFound();
-        }
-
-        ticket.Status = "Open";
-        ticket.UpdatedAt = DateTime.Now;
-
-        _dbContext.SaveChanges();
-
-        return NoContent();
-    }
-
-    [HttpPost]
-    [Authorize]
-    public IActionResult CreateTicket(TicketDTO ticketDTO)
-    {
-        var identityUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
-
-        if (userProfile == null)
-        {
-            return BadRequest("UserProfile not found.");
-        }
-
-        var ticket = new Ticket
-        {
-            Subject = ticketDTO.Subject,
-            Category = ticketDTO.Category,
-            Game = ticketDTO.Game,
-            Server = ticketDTO.Server,
-            Description = ticketDTO.Description,
-            Status = "Open",
-            CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
-        };
-
-        _dbContext.Tickets.Add(ticket);
-        _dbContext.SaveChanges();
-
-        return Created($"/api/tickets/{ticket.Id}", ticket);
-    }
-
-    [HttpPut("{id}")]
-    [Authorize]
-    public IActionResult UpdateTicket(int id, TicketDTO ticketDTO)
-    {
-        var ticketToUpdate = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
-
-        if (ticketToUpdate == null)
-        {
-            return NotFound();
-        }
-
-        if (id != ticketDTO.Id)
-        {
-            return BadRequest();
-        }
-
-        ticketToUpdate.Subject = ticketDTO.Subject;
-        ticketToUpdate.Description = ticketDTO.Description;
-        ticketToUpdate.Game = ticketDTO.Game;
-        ticketToUpdate.Server = ticketDTO.Server;
-        ticketToUpdate.Category = ticketDTO.Category;
-        ticketToUpdate.UpdatedAt = DateTime.Now;
-
-        _dbContext.SaveChanges();
-
-        return NoContent();
-    }
-
     [HttpPut("{id}/close")]
     [Authorize]
     public IActionResult CloseTicket(int id)
     {
-        var ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
-
+        Ticket ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
         if (ticket == null)
         {
             return NotFound();
@@ -190,7 +112,23 @@ public class TicketsController : ControllerBase
 
         ticket.Status = "Closed";
         ticket.UpdatedAt = DateTime.Now;
+        _dbContext.SaveChanges();
 
+        return NoContent();
+    }
+
+    [HttpPut("{id}/restore")]
+    [Authorize]
+    public IActionResult RestoreTIcket(int id)
+    {
+        Ticket ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        ticket.Status = "Open";
+        ticket.UpdatedAt = DateTime.Now;
         _dbContext.SaveChanges();
 
         return NoContent();
@@ -207,9 +145,16 @@ public class TicketsController : ControllerBase
             return NotFound();
         }
 
+        if (ticket.Status != "Closed")
+        {
+            return BadRequest("Only closed tickets can be deleted.");
+        }
+
         _dbContext.Tickets.Remove(ticket);
         _dbContext.SaveChanges();
 
         return NoContent();
     }
 }
+
+

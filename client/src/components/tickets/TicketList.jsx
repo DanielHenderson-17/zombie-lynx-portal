@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import {
   getOpenTickets,
   getClosedTickets,
-  closeTicket,
-  restoreTicket,
+  closeTicketAPI,
+  restoreTicketAPI,
+  deleteTicket,
 } from "../../managers/ticketManager";
 import "../../assets/styles/tickets.css";
 
@@ -28,27 +29,41 @@ export default function TicketList() {
   }, []);
 
   const handleCloseTicket = (ticketId) => {
-    closeTicket(ticketId)
+    closeTicketAPI(ticketId)
       .then(() => {
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
-            ticket.id === ticketId ? { ...ticket, isOpen: false } : ticket
+            ticket.id === ticketId
+              ? { ...ticket, isOpen: false, status: "Closed" }
+              : ticket
           )
         );
       })
       .catch((error) => console.error("Error closing ticket:", error));
   };
 
-  const handleReopenTicket = (ticketId) => {
-    restoreTicket(ticketId)
+  const handleRestoreTicket = (ticketId) => {
+    restoreTicketAPI(ticketId)
       .then(() => {
         setTickets((prevTickets) =>
           prevTickets.map((ticket) =>
-            ticket.id === ticketId ? { ...ticket, isOpen: true } : ticket
+            ticket.id === ticketId
+              ? { ...ticket, isOpen: true, status: "Open" }
+              : ticket
           )
         );
       })
       .catch((error) => console.error("Error restoring ticket:", error));
+  };
+
+  const handleDeleteTicket = (ticketId) => {
+    deleteTicket(ticketId)
+      .then(() => {
+        setTickets((prevTickets) =>
+          prevTickets.filter((ticket) => ticket.id !== ticketId)
+        );
+      })
+      .catch((error) => console.error("Error deleting ticket:", error));
   };
 
   const filteredTickets = tickets
@@ -70,6 +85,7 @@ export default function TicketList() {
 
   return (
     <div>
+      {/* Filters */}
       <div className="d-flex justify-content-between mb-3">
         <div>
           <button
@@ -176,10 +192,10 @@ export default function TicketList() {
             <thead className="thead-dark">
               <tr>
                 <th className="text-start col-4">Topic</th>
-                <th className="text-start col-2">Game</th>
+                <th className="text-start col-1">Game</th>
                 <th className="text-start col-2">Server</th>
                 <th className="text-start col-1">Status</th>
-                <th className="text-start col-1">Options</th>
+                <th className="text-end col-2 pe-3">Options</th>
               </tr>
             </thead>
             <tbody>
@@ -203,7 +219,7 @@ export default function TicketList() {
                       </small>
                     </div>
                   </td>
-                  <td className="text-start col-2">
+                  <td className="text-start col-1">
                     <span className="text-warning fw-bold">{ticket.game}</span>
                   </td>
                   <td className="text-start col-2">
@@ -216,13 +232,22 @@ export default function TicketList() {
                       {ticket.status}
                     </span>
                   </td>
-                  <td className="text-start col-1 position-relative">
-                    <button
-                      className="btn btn-primary btn-sm ticket-button"
-                      onClick={() => handleReopenTicket(ticket.id)}
-                    >
-                      Restore
-                    </button>
+                  <td className="text-start col-2 position-relative">
+                    <div className="d-flex justify-content-end pe-2">
+                      <button
+                        className="btn btn-primary btn-sm ticket-button me-2"
+                        onClick={() => handleRestoreTicket(ticket.id)}
+                      >
+                        Restore
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm ticket-button"
+                        onClick={() => handleDeleteTicket(ticket.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+
                     <small className="position-absolute ticket-id">
                       Ticket ID: {ticket.id}
                     </small>

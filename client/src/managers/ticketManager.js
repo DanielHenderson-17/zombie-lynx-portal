@@ -28,8 +28,17 @@ export const getClosedTickets = () => {
     });
 };
 
-export const restoreTicket = (ticketId) => {
-  return fetch(`/api/tickets/${ticketId}/restore`, {
+export const closeTicketAPI = (ticketId) => {
+  return fetch(`${_apiUrl}/${ticketId}/close`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const restoreTicketAPI = (ticketId) => {
+  return fetch(`${_apiUrl}/${ticketId}/restore`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -54,15 +63,6 @@ export const updateTicket = (ticket) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(ticket),
-  });
-};
-
-export const closeTicket = (ticketId) => {
-  return fetch(`${_apiUrl}/${ticketId}/close`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 };
 

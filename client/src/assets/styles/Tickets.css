@@ -1,5 +1,5 @@
-.tickets {
-  width: 100% !important;
+.ticket {
+  min-width: 100% !important;
 }
 
 .ticket-button {
@@ -8,8 +8,22 @@
 
 .ticket-id {
   bottom: 5px;
-  right: -10px;
+  right: -30px;
   width: 100px;
   font-size: 10px;
   color: #6c757d;
+}
+
+.ticket-nav,
+.ticket-body,
+.ticket-container {
+  background-color: #181c23 !important;
+}
+
+hr {
+  border-top: 1px solid white;
+}
+
+.sub-text {
+  color: rgb(150, 150, 150);
 }
