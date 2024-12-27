@@ -32,61 +32,67 @@ export default function OpenTickets() {
 
   return (
     <div>
-      <table className="table table-dark table-striped align-middle">
-        <thead className="thead-dark">
-          <tr>
-            <th className="text-start col-4">Topic</th>
-            <th className="text-start col-2">Game</th>
-            <th className="text-start col-2">Server</th>
-            <th className="text-start col-1">Status</th>
-            <th className="text-start col-1">Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tickets.map((ticket) => (
-            <tr key={ticket.id}>
-              <td className="text-start col-4">
-                <div>
-                  <strong className="text-white">{ticket.subject}</strong>
-                  <br />
-                  <small className="sub-text">{ticket.category}</small>
-                  <br />
-                  <small className="sub-text">
-                    {new Date(ticket.createdAt).toLocaleString()}
-                  </small>
-                  <br />
-                  <small className="sub-text">
-                    Assigned:{" "}
-                    {ticket.assignedUsers
-                      .map((user) => `${user.firstName} ${user.lastName}`)
-                      .join(", ")}{" "}
-                  </small>
-                </div>
-              </td>
-              <td className="text-start col-2">
-                <span className="text-warning fw-bold">{ticket.game}</span>
-              </td>
-              <td className="text-start col-2">
-                <span className="text-warning fw-bold">{ticket.server}</span>
-              </td>
-              <td className="text-start col-1">
-                <span className="text-warning fw-bold">{ticket.status}</span>
-              </td>
-              <td className="text-start col-1 position-relative">
-                <button
-                  className="btn btn-danger btn-sm ticket-button"
-                  onClick={() => handleCloseTicket(ticket.id)}
-                >
-                  Close
-                </button>
-                <small className="position-absolute ticket-id">
-                  Ticket ID: {ticket.id}
-                </small>
-              </td>
+      {tickets.length === 0 ? (
+        <p className="mt-5 pt-4 text-white">You have no open tickets.</p>
+      ) : (
+        <table className="table table-dark table-striped align-middle">
+          <thead className="thead-dark">
+            <tr>
+              <th className="text-start col-4">Topic</th>
+              <th className="text-start col-1">Game</th>
+              <th className="text-start col-2">Server</th>
+              <th className="text-start col-1">Status</th>
+              <th className="text-end col-2 pe-3">Options</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {tickets.map((ticket) => (
+              <tr key={ticket.id}>
+                <td className="text-start col-4">
+                  <div>
+                    <strong className="text-white">{ticket.subject}</strong>
+                    <br />
+                    <small className="sub-text">{ticket.category}</small>
+                    <br />
+                    <small className="sub-text">
+                      {new Date(ticket.createdAt).toLocaleString()}
+                    </small>
+                    <br />
+                    <small className="sub-text">
+                      Assigned:{" "}
+                      {ticket.assignedUsers
+                        .map((user) => `${user.firstName} ${user.lastName}`)
+                        .join(", ")}{" "}
+                    </small>
+                  </div>
+                </td>
+                <td className="text-start col-1">
+                  <span className="text-warning fw-bold">{ticket.game}</span>
+                </td>
+                <td className="text-start col-2">
+                  <span className="text-warning fw-bold">{ticket.server}</span>
+                </td>
+                <td className="text-start col-1">
+                  <span className="text-success fw-bold">{ticket.status}</span>
+                </td>
+                <td className="text-start col-1 position-relative">
+                  <div className="d-flex justify-content-end pe-2">
+                    <button
+                      className="btn btn-danger btn-sm ticket-button"
+                      onClick={() => handleCloseTicket(ticket.id)}
+                    >
+                      <i className="bi bi-x-circle"></i>
+                    </button>
+                  </div>
+                  <small className="position-absolute ticket-id">
+                    Ticket ID: {ticket.id}
+                  </small>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

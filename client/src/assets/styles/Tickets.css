@@ -3,7 +3,7 @@
 }
 
 .ticket-button {
-  width: 75px;
+  /* width: 75px; */
 }
 
 .ticket-id {
@@ -18,6 +18,14 @@
 .ticket-body,
 .ticket-container {
   background-color: #181c23 !important;
+}
+
+.ticket-container {
+  height: 500px;
+}
+
+.closed-status {
+  color: #b31818;
 }
 
 hr {
