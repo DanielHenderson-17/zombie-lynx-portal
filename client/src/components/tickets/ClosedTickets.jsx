@@ -42,6 +42,10 @@ export default function ClosedTickets() {
       .catch((error) => console.error("Error deleting ticket:", error));
   };
 
+  function truncateText(text, maxLength = 20) {
+    return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
+  }
+
   if (error) {
     return <p className="text-danger">{error}</p>;
   }
@@ -86,7 +90,9 @@ export default function ClosedTickets() {
                   <span className="text-warning fw-bold">{ticket.game}</span>
                 </td>
                 <td className="text-start col-2">
-                  <span className="text-warning fw-bold">{ticket.server}</span>
+                  <span className="text-warning fw-bold">
+                    {truncateText(ticket.server)}
+                  </span>
                 </td>
                 <td className="text-start col-1">
                   <span className="fw-bold text-danger">{ticket.status}</span>

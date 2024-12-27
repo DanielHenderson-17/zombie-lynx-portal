@@ -11,13 +11,13 @@ export default function Tickets() {
         <div>
           <Link to="/tickets/open-tickets">
             <button className="btn d-block w-100 text-start mb-2 text-white">
-              Open Tickets
+              <i className="bi bi-inbox me-3"></i>Open Tickets
             </button>
           </Link>
           <hr />
           <Link to="/tickets/closed-tickets">
             <button className="btn d-block w-100 text-start text-white">
-              Trash
+              <i className="bi bi-trash3 me-3"></i>Trash
             </button>
           </Link>
         </div>
