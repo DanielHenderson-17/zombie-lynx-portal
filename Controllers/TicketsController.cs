@@ -155,6 +155,131 @@ public class TicketsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("options")]
+    [Authorize]
+    public IActionResult GetOptions()
+    {
+        var categories = new[] { "Bug", "Feature Request", "Shop Issue", "Connection Issue", "Other" };
+        var games = new[] { "Ark:SA", "Ark:SE", "Palworld", "Empyrion", "Minecraft", "Eco" };
+        var servers = new[] { "NA-East", "EU-West", "Asia" };
+        return Ok(new { categories, games, servers });
+    }
+
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetUsers()
+    {
+        var users = _dbContext.UserProfiles.Select(up => new
+        {
+            up.Id,
+            FullName = $"{up.FirstName} {up.LastName}"
+        }).ToList();
+
+        return Ok(users);
+    }
+
+
+    [HttpPost]
+    [Authorize]
+    public IActionResult CreateTicket([FromBody] CreateTicketDTO createTicketDto)
+    {
+        if (createTicketDto == null)
+        {
+            return BadRequest("Invalid ticket data.");
+        }
+
+        var identityUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);
+
+        if (userProfile == null)
+        {
+            return BadRequest("User profile not found.");
+        }
+
+        if (string.IsNullOrEmpty(createTicketDto.Subject) ||
+            string.IsNullOrEmpty(createTicketDto.Category) ||
+            string.IsNullOrEmpty(createTicketDto.Game) ||
+            string.IsNullOrEmpty(createTicketDto.Server))
+        {
+            return BadRequest("Missing required fields.");
+        }
+
+        var ticket = new Ticket
+        {
+            Subject = createTicketDto.Subject,
+            Category = createTicketDto.Category,
+            Game = createTicketDto.Game,
+            Server = createTicketDto.Server,
+            Description = createTicketDto.Description,
+            Status = "Open",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            UserProfileId = userProfile.Id // Link ticket to the creator
+        };
+
+        using var transaction = _dbContext.Database.BeginTransaction();
+        try
+        {
+            _dbContext.Tickets.Add(ticket);
+            _dbContext.SaveChanges();
+
+            // Add the creator to UserTickets
+            _dbContext.UserTickets.Add(new UserTicket
+            {
+                TicketId = ticket.Id,
+                UserProfileId = userProfile.Id,
+                AssignedAt = DateTime.UtcNow
+            });
+
+            // Add other assigned users to UserTickets
+            if (createTicketDto.AssignedUserIds != null && createTicketDto.AssignedUserIds.Any())
+            {
+                foreach (var assignedUserId in createTicketDto.AssignedUserIds)
+                {
+                    if (_dbContext.UserProfiles.Any(up => up.Id == assignedUserId))
+                    {
+                        _dbContext.UserTickets.Add(new UserTicket
+                        {
+                            TicketId = ticket.Id,
+                            UserProfileId = assignedUserId,
+                            AssignedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+            }
+
+            _dbContext.SaveChanges();
+            transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+            return StatusCode(500, $"Error creating ticket: {ex.Message}");
+        }
+
+        return CreatedAtAction(nameof(CreateTicket), new { id = ticket.Id }, new
+        {
+            ticket.Id,
+            ticket.Subject,
+            ticket.Category,
+            ticket.Game,
+            ticket.Server,
+            ticket.Description,
+            ticket.Status,
+            ticket.CreatedAt,
+            ticket.UpdatedAt,
+            AssignedUsers = _dbContext.UserTickets
+                .Where(ut => ut.TicketId == ticket.Id)
+                .Select(ut => new
+                {
+                    ut.UserProfile.FirstName,
+                    ut.UserProfile.LastName
+                })
+                .ToList()
+        });
+    }
+
 }
 
 
