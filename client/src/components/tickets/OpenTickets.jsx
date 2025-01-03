@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { getOpenTickets, closeTicketAPI } from "../../managers/ticketManager";
 
 export default function OpenTickets() {
+  // State to store open tickets
   const [tickets, setTickets] = useState([]);
+
+  // State to manage error messages
   const [error, setError] = useState(null);
 
+  // Fetch open tickets
   useEffect(() => {
     getOpenTickets()
       .then((data) => {
@@ -16,6 +20,7 @@ export default function OpenTickets() {
       });
   }, []);
 
+  // Handle closing a ticket
   const handleCloseTicket = (ticketId) => {
     closeTicketAPI(ticketId)
       .then(() => {
@@ -26,6 +31,7 @@ export default function OpenTickets() {
       .catch((error) => console.error("Error closing ticket:", error));
   };
 
+  // Truncate long text for display
   function truncateText(text, maxLength = 20) {
     return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
   }
@@ -66,7 +72,7 @@ export default function OpenTickets() {
                       Assigned:{" "}
                       {ticket.assignedUsers
                         .map((user) => `${user.firstName} ${user.lastName}`)
-                        .join(", ")}{" "}
+                        .join(", ")}
                     </small>
                   </div>
                 </td>

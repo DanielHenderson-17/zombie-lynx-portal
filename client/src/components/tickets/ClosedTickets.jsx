@@ -6,9 +6,13 @@ import {
 } from "../../managers/ticketManager";
 
 export default function ClosedTickets() {
+  // State to store closed tickets
   const [tickets, setTickets] = useState([]);
+
+  // State to manage error messages
   const [error, setError] = useState(null);
 
+  // Fetch closed tickets
   useEffect(() => {
     getClosedTickets()
       .then((data) => {
@@ -20,6 +24,7 @@ export default function ClosedTickets() {
       });
   }, []);
 
+  // Handle restoring a ticket
   const handleRestoreTicket = (ticketId) => {
     restoreTicketAPI(ticketId)
       .then(() => {
@@ -32,6 +37,7 @@ export default function ClosedTickets() {
       .catch((error) => console.error("Error restoring ticket:", error));
   };
 
+  // Handle deleting a ticket
   const handleDeleteTicket = (ticketId) => {
     deleteTicket(ticketId)
       .then(() => {
@@ -42,6 +48,7 @@ export default function ClosedTickets() {
       .catch((error) => console.error("Error deleting ticket:", error));
   };
 
+  // Truncate long text for display
   function truncateText(text, maxLength = 20) {
     return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
   }

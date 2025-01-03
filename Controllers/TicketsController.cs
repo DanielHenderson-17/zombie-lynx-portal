@@ -18,6 +18,7 @@ public class TicketsController : ControllerBase
         _dbContext = context;
     }
 
+    // Retrieves all open tickets
     [HttpGet("open")]
     [Authorize]
     public IActionResult GetOpenTickets()
@@ -59,6 +60,7 @@ public class TicketsController : ControllerBase
         return Ok(ticketsQuery.ToList());
     }
 
+    // Retrieves all closed tickets
     [HttpGet("closed")]
     [Authorize]
     public IActionResult GetClosedTickets()
@@ -100,6 +102,7 @@ public class TicketsController : ControllerBase
         return Ok(ticketsQuery.ToList());
     }
 
+    // Closes a specific ticket
     [HttpPut("{id}/close")]
     [Authorize]
     public IActionResult CloseTicket(int id)
@@ -117,9 +120,10 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
+    // Restores a specific ticket to open status
     [HttpPut("{id}/restore")]
     [Authorize]
-    public IActionResult RestoreTIcket(int id)
+    public IActionResult RestoreTicket(int id)
     {
         Ticket ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
         if (ticket == null)
@@ -134,6 +138,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
+    // Deletes a specific ticket
     [HttpDelete("{id}")]
     [Authorize]
     public IActionResult DeleteTicket(int id)
@@ -156,6 +161,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
+    // Retrieves options for ticket creation
     [HttpGet("options")]
     [Authorize]
     public IActionResult GetOptions()
@@ -166,6 +172,7 @@ public class TicketsController : ControllerBase
         return Ok(new { categories, games, servers });
     }
 
+    // Retrieves all users (Admin only)
     [HttpGet("users")]
     [Authorize(Roles = "Admin")]
     public IActionResult GetUsers()
@@ -179,7 +186,8 @@ public class TicketsController : ControllerBase
         return Ok(users);
     }
 
-
+    // Creates a new ticket
+    // Parse JSON directly from the HTTP request body
     [HttpPost]
     [Authorize]
     public IActionResult CreateTicket([FromBody] CreateTicketDTO createTicketDto)
@@ -215,7 +223,7 @@ public class TicketsController : ControllerBase
             Status = "Open",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            UserProfileId = userProfile.Id // Link ticket to the creator
+            UserProfileId = userProfile.Id
         };
 
         using var transaction = _dbContext.Database.BeginTransaction();
@@ -224,7 +232,6 @@ public class TicketsController : ControllerBase
             _dbContext.Tickets.Add(ticket);
             _dbContext.SaveChanges();
 
-            // Add the creator to UserTickets
             _dbContext.UserTickets.Add(new UserTicket
             {
                 TicketId = ticket.Id,
@@ -232,7 +239,6 @@ public class TicketsController : ControllerBase
                 AssignedAt = DateTime.UtcNow
             });
 
-            // Add other assigned users to UserTickets
             if (createTicketDto.AssignedUserIds != null && createTicketDto.AssignedUserIds.Any())
             {
                 foreach (var assignedUserId in createTicketDto.AssignedUserIds)
@@ -279,7 +285,4 @@ public class TicketsController : ControllerBase
                 .ToList()
         });
     }
-
 }
-
-

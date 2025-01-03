@@ -55,14 +55,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
         </RRNavLink>
 
         {/* Links Section */}
-        <div className="d-flex justify-content-center flex-grow-1">
-          {/* <RRNavLink className="nav-link text-white mx-3" to="/">
-            Open Tickets
-          </RRNavLink>
-          <RRNavLink className="nav-link text-white mx-3" to="/closed-tickets">
-            Closed Tickets
-          </RRNavLink> */}
-        </div>
+        <div className="d-flex justify-content-center flex-grow-1"></div>
 
         {/* Email and Logout Section */}
         {loggedInUser && (
