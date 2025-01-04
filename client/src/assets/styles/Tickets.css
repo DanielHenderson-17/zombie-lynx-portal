@@ -24,6 +24,11 @@
   height: 500px;
 }
 
+.ticket-body1 {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 .closed-status {
   color: #b31818;
 }

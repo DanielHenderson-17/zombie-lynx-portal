@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getOpenTickets, closeTicketAPI } from "../../managers/ticketManager";
 
-export default function OpenTickets() {
+export default function OpenTickets({ onTicketChange }) {
   // State to store open tickets
   const [tickets, setTickets] = useState([]);
 
@@ -9,26 +9,31 @@ export default function OpenTickets() {
   const [error, setError] = useState(null);
 
   // Fetch open tickets
+  const fetchTickets = async () => {
+    try {
+      const data = await getOpenTickets();
+      setTickets(data);
+    } catch (error) {
+      console.error("Error fetching open tickets:", error);
+      setError("Failed to fetch open tickets. Please try again.");
+    }
+  };
+
   useEffect(() => {
-    getOpenTickets()
-      .then((data) => {
-        setTickets(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching open tickets:", error);
-        setError("Failed to fetch open tickets. Please try again.");
-      });
+    fetchTickets();
   }, []);
 
   // Handle closing a ticket
-  const handleCloseTicket = (ticketId) => {
-    closeTicketAPI(ticketId)
-      .then(() => {
-        setTickets((prevTickets) =>
-          prevTickets.filter((ticket) => ticket.id !== ticketId)
-        );
-      })
-      .catch((error) => console.error("Error closing ticket:", error));
+  const handleCloseTicket = async (ticketId) => {
+    try {
+      await closeTicketAPI(ticketId);
+      setTickets((prevTickets) =>
+        prevTickets.filter((ticket) => ticket.id !== ticketId)
+      );
+      onTicketChange(); // Notify parent to update the ticket count
+    } catch (error) {
+      console.error("Error closing ticket:", error);
+    }
   };
 
   // Truncate long text for display

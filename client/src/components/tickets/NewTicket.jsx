@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { createTicket, getTicketOptions } from "../../managers/ticketManager";
 import { getAllUsers } from "../../managers/userProfileManager";
 
@@ -23,6 +24,9 @@ export default function NewTicket() {
 
   // State to track loading status
   const [loading, setLoading] = useState(true);
+
+  // React Router's navigation function
+  const navigate = useNavigate();
 
   // Fetch ticket options and user data
   useEffect(() => {
@@ -61,7 +65,6 @@ export default function NewTicket() {
     e.preventDefault();
     try {
       await createTicket(formData);
-      alert("Ticket created successfully!");
       setFormData({
         subject: "",
         category: "",
@@ -70,6 +73,8 @@ export default function NewTicket() {
         description: "",
         assignedUserIds: [],
       });
+      alert("Ticket created. Redirecting...");
+      navigate("/tickets/open-tickets"); // Navigate to the open tickets page
     } catch (error) {
       console.error("Error creating ticket:", error);
     }

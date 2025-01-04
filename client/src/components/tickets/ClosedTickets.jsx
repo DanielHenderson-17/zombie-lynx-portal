@@ -5,7 +5,7 @@ import {
   deleteTicket,
 } from "../../managers/ticketManager";
 
-export default function ClosedTickets() {
+export default function ClosedTickets({ onTicketChange }) {
   // State to store closed tickets
   const [tickets, setTickets] = useState([]);
 
@@ -13,39 +13,43 @@ export default function ClosedTickets() {
   const [error, setError] = useState(null);
 
   // Fetch closed tickets
+  const fetchTickets = async () => {
+    try {
+      const data = await getClosedTickets();
+      setTickets(data);
+    } catch (error) {
+      console.error("Error fetching closed tickets:", error);
+      setError("Failed to fetch closed tickets. Please try again.");
+    }
+  };
+
   useEffect(() => {
-    getClosedTickets()
-      .then((data) => {
-        setTickets(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching closed tickets:", error);
-        setError("Failed to fetch closed tickets. Please try again.");
-      });
+    fetchTickets();
   }, []);
 
   // Handle restoring a ticket
-  const handleRestoreTicket = (ticketId) => {
-    restoreTicketAPI(ticketId)
-      .then(() => {
-        getClosedTickets()
-          .then((updatedTickets) => setTickets(updatedTickets))
-          .catch((error) =>
-            console.error("Error fetching updated tickets:", error)
-          );
-      })
-      .catch((error) => console.error("Error restoring ticket:", error));
+  const handleRestoreTicket = async (ticketId) => {
+    try {
+      await restoreTicketAPI(ticketId);
+      setTickets((prevTickets) =>
+        prevTickets.filter((ticket) => ticket.id !== ticketId)
+      );
+      onTicketChange(); // Notify parent to update the open ticket count
+    } catch (error) {
+      console.error("Error restoring ticket:", error);
+    }
   };
 
   // Handle deleting a ticket
-  const handleDeleteTicket = (ticketId) => {
-    deleteTicket(ticketId)
-      .then(() => {
-        setTickets((prevTickets) =>
-          prevTickets.filter((ticket) => ticket.id !== ticketId)
-        );
-      })
-      .catch((error) => console.error("Error deleting ticket:", error));
+  const handleDeleteTicket = async (ticketId) => {
+    try {
+      await deleteTicket(ticketId);
+      setTickets((prevTickets) =>
+        prevTickets.filter((ticket) => ticket.id !== ticketId)
+      );
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+    }
   };
 
   // Truncate long text for display
