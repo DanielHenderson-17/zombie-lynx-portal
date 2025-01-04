@@ -77,58 +77,61 @@ export default function ClosedTickets({ onTicketChange }) {
             </tr>
           </thead>
           <tbody>
-            {tickets.map((ticket) => (
-              <tr key={ticket.id}>
-                <td className="text-start col-4">
-                  <div>
-                    <strong className="text-white">{ticket.subject}</strong>
-                    <br />
-                    <small className="sub-text">{ticket.category}</small>
-                    <br />
-                    <small className="sub-text">
-                      {new Date(ticket.createdAt).toLocaleString()}
+            {tickets
+              .slice()
+              .reverse()
+              .map((ticket) => (
+                <tr key={ticket.id}>
+                  <td className="text-start col-4">
+                    <div>
+                      <strong className="text-white">{ticket.subject}</strong>
+                      <br />
+                      <small className="sub-text">{ticket.category}</small>
+                      <br />
+                      <small className="sub-text">
+                        {new Date(ticket.createdAt).toLocaleString()}
+                      </small>
+                      <br />
+                      <small className="sub-text">
+                        Assigned:{" "}
+                        {ticket.assignedUsers
+                          .map((user) => `${user.firstName} ${user.lastName}`)
+                          .join(", ")}{" "}
+                      </small>
+                    </div>
+                  </td>
+                  <td className="text-start col-1">
+                    <span className="text-warning fw-bold">{ticket.game}</span>
+                  </td>
+                  <td className="text-start col-2">
+                    <span className="text-warning fw-bold">
+                      {truncateText(ticket.server)}
+                    </span>
+                  </td>
+                  <td className="text-start col-1">
+                    <span className="fw-bold text-danger">{ticket.status}</span>
+                  </td>
+                  <td className="text-start col-2 position-relative">
+                    <div className="d-flex justify-content-end pe-2">
+                      <button
+                        className="btn btn-primary btn-sm ticket-button me-2"
+                        onClick={() => handleRestoreTicket(ticket.id)}
+                      >
+                        <i className="bi bi-arrow-counterclockwise"></i>
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm ticket-button"
+                        onClick={() => handleDeleteTicket(ticket.id)}
+                      >
+                        <i className="bi bi-trash3"></i>
+                      </button>
+                    </div>
+                    <small className="position-absolute ticket-id">
+                      Ticket ID: {ticket.id}
                     </small>
-                    <br />
-                    <small className="sub-text">
-                      Assigned:{" "}
-                      {ticket.assignedUsers
-                        .map((user) => `${user.firstName} ${user.lastName}`)
-                        .join(", ")}{" "}
-                    </small>
-                  </div>
-                </td>
-                <td className="text-start col-1">
-                  <span className="text-warning fw-bold">{ticket.game}</span>
-                </td>
-                <td className="text-start col-2">
-                  <span className="text-warning fw-bold">
-                    {truncateText(ticket.server)}
-                  </span>
-                </td>
-                <td className="text-start col-1">
-                  <span className="fw-bold text-danger">{ticket.status}</span>
-                </td>
-                <td className="text-start col-2 position-relative">
-                  <div className="d-flex justify-content-end pe-2">
-                    <button
-                      className="btn btn-primary btn-sm ticket-button me-2"
-                      onClick={() => handleRestoreTicket(ticket.id)}
-                    >
-                      <i className="bi bi-arrow-counterclockwise"></i>
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm ticket-button"
-                      onClick={() => handleDeleteTicket(ticket.id)}
-                    >
-                      <i className="bi bi-trash3"></i>
-                    </button>
-                  </div>
-                  <small className="position-absolute ticket-id">
-                    Ticket ID: {ticket.id}
-                  </small>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       )}
