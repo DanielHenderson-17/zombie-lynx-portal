@@ -2,6 +2,7 @@ import { Link, Route, Routes } from "react-router-dom";
 import OpenTickets from "./OpenTickets";
 import ClosedTickets from "./ClosedTickets";
 import NewTicket from "./NewTicket";
+import SingleTicket from "./SingleTicket";
 import "../../assets/styles/tickets.css";
 import { useEffect, useState } from "react";
 import { getOpenTickets } from "../../managers/ticketManager";
@@ -77,6 +78,8 @@ export default function Tickets({ loggedInUser }) {
             path="closed-tickets"
             element={<ClosedTickets onTicketChange={fetchOpenTicketCount} />}
           />
+          <Route path="ticket/:ticketId" element={<SingleTicket />} />{" "}
+          {/* Add route for SingleTicket */}
         </Routes>
       </div>
     </div>

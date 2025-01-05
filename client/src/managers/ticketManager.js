@@ -95,3 +95,11 @@ export const getTicketOptions = () => {
       throw error;
     });
 };
+
+export const getTicketById = async (id) => {
+  const response = await fetch(`/api/tickets/${id}`);
+  if (!response.ok) {
+    throw new Error(`Error fetching ticket with ID ${id}`);
+  }
+  return response.json();
+};

@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { getOpenTickets, closeTicketAPI } from "../../managers/ticketManager";
 
 export default function OpenTickets({ onTicketChange }) {
-  // State to store open tickets
   const [tickets, setTickets] = useState([]);
-
-  // State to manage error messages
   const [error, setError] = useState(null);
 
-  // Fetch open tickets
+  const navigate = useNavigate(); // Initialize navigation
+
   const fetchTickets = async () => {
     try {
       const data = await getOpenTickets();
@@ -23,20 +22,22 @@ export default function OpenTickets({ onTicketChange }) {
     fetchTickets();
   }, []);
 
-  // Handle closing a ticket
+  const handleTicketClick = (ticketId) => {
+    navigate(`/tickets/ticket/${ticketId}`); // Navigate to SingleTicket
+  };
+
   const handleCloseTicket = async (ticketId) => {
     try {
       await closeTicketAPI(ticketId);
       setTickets((prevTickets) =>
         prevTickets.filter((ticket) => ticket.id !== ticketId)
       );
-      onTicketChange(); // Notify parent to update the ticket count
+      onTicketChange();
     } catch (error) {
       console.error("Error closing ticket:", error);
     }
   };
 
-  // Truncate long text for display
   function truncateText(text, maxLength = 20) {
     return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
   }
@@ -65,7 +66,11 @@ export default function OpenTickets({ onTicketChange }) {
               .slice()
               .reverse()
               .map((ticket) => (
-                <tr key={ticket.id}>
+                <tr
+                  key={ticket.id}
+                  onClick={() => handleTicketClick(ticket.id)} // Navigate on click
+                  style={{ cursor: "pointer" }} // Add pointer cursor
+                >
                   <td className="text-start col-4">
                     <div>
                       <strong className="text-white">{ticket.subject}</strong>
@@ -101,7 +106,10 @@ export default function OpenTickets({ onTicketChange }) {
                     <div className="d-flex justify-content-end pe-2">
                       <button
                         className="btn btn-danger btn-sm ticket-button"
-                        onClick={() => handleCloseTicket(ticket.id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent navigating when clicking this button
+                          handleCloseTicket(ticket.id);
+                        }}
                       >
                         <i className="bi bi-x-circle"></i>
                       </button>

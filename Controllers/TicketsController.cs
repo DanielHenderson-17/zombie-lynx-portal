@@ -285,4 +285,41 @@ public class TicketsController : ControllerBase
                 .ToList()
         });
     }
+
+    // Retrieves a ticket by its ID
+    [HttpGet("{id}")]
+    [Authorize]
+    public IActionResult GetTicketById(int id)
+    {
+        var ticket = _dbContext.Tickets
+            .Include(t => t.UserTickets) // Include UserTickets to get assigned users
+                .ThenInclude(ut => ut.UserProfile) // Include UserProfile for user details
+            .Where(t => t.Id == id)
+            .Select(t => new
+            {
+                t.Id,
+                t.Subject,
+                t.Category,
+                t.Game,
+                t.Server,
+                t.Description,
+                t.Status,
+                t.CreatedAt,
+                t.UpdatedAt,
+                AssignedUsers = t.UserTickets.Select(ut => new
+                {
+                    ut.UserProfile.FirstName,
+                    ut.UserProfile.LastName
+                }).ToList()
+            })
+            .FirstOrDefault();
+
+        if (ticket == null)
+        {
+            return NotFound($"Ticket with ID {id} not found.");
+        }
+
+        return Ok(ticket);
+    }
+
 }
