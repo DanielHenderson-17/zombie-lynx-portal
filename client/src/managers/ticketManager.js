@@ -103,3 +103,31 @@ export const getTicketById = async (id) => {
   }
   return response.json();
 };
+
+export const assignUserToTicket = (ticketId, userId) => {
+  return fetch(`/api/tickets/${ticketId}/assign-user`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userId),
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error(`Error assigning user: ${res.statusText}`);
+    }
+  });
+};
+
+export const getAllUsers = () => {
+  return fetch("/api/tickets/users")
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Error fetching users: ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching users:", error);
+      throw error;
+    });
+};

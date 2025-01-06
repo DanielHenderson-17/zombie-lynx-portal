@@ -322,4 +322,41 @@ public class TicketsController : ControllerBase
         return Ok(ticket);
     }
 
+    // Assign a user to a ticket
+    [HttpPost("{id}/assign-user")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult AssignUserToTicket(int id, [FromBody] int userId)
+    {
+        var ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
+        if (ticket == null)
+        {
+            return NotFound($"Ticket with ID {id} not found.");
+        }
+
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.Id == userId);
+        if (userProfile == null)
+        {
+            return NotFound($"User with ID {userId} not found.");
+        }
+
+        var existingAssignment = _dbContext.UserTickets
+            .Any(ut => ut.TicketId == id && ut.UserProfileId == userId);
+        if (existingAssignment)
+        {
+            return BadRequest("User is already assigned to this ticket.");
+        }
+
+        var userTicket = new UserTicket
+        {
+            TicketId = id,
+            UserProfileId = userId,
+            AssignedAt = DateTime.UtcNow
+        };
+
+        _dbContext.UserTickets.Add(userTicket);
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
+
 }

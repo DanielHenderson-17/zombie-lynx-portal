@@ -5,6 +5,8 @@ import {
   closeTicketAPI,
   restoreTicketAPI,
   deleteTicket,
+  assignUserToTicket,
+  getAllUsers,
 } from "../../managers/ticketManager";
 import { formatLongDateTime } from "../../utils/longDateTime";
 import { categoryFormatter } from "../../utils/categoryFormater";
@@ -13,18 +15,32 @@ import { getGameImage } from "../../utils/gameFormatter";
 export default function SingleTicket() {
   const { ticketId } = useParams();
   const [ticket, setTicket] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch the ticket details
+  // Fetch the ticket details and check if the user is an admin
   useEffect(() => {
     const fetchTicket = async () => {
       try {
         const data = await getTicketById(ticketId);
         setTicket(data);
+
+        // Check if the user is an admin by attempting to fetch the list of all users
+        const users = await getAllUsers();
+        console.log("Fetched users:", users); // Log all users
+        setAllUsers(users);
+        setIsAdmin(true); // If this succeeds, the user is an admin
       } catch (error) {
-        console.error("Error fetching ticket:", error);
-        setError("Failed to fetch ticket details.");
+        if (error.message.includes("403")) {
+          console.warn(
+            "User is not an admin, admin-specific features disabled."
+          );
+        } else {
+          console.error("Error fetching data:", error);
+          setError("Failed to fetch ticket details.");
+        }
       }
     };
 
@@ -64,9 +80,24 @@ export default function SingleTicket() {
     }
   };
 
+  // Assign user to the ticket
+  const handleAssignUser = async (userId) => {
+    try {
+      await assignUserToTicket(ticketId, userId); // Post the user assignment to the server
+      const updatedTicket = await getTicketById(ticketId); // Fetch the updated ticket details
+      setTicket(updatedTicket); // Update state and trigger re-render
+    } catch (error) {
+      console.error("Error assigning user to ticket:", error);
+      setError("Failed to assign user.");
+    }
+  };
+
   if (!ticket) {
     return <p>Loading ticket details...</p>;
   }
+
+  console.log("Assigned Users:", ticket.assignedUsers);
+  console.log("All Users:", allUsers);
 
   return (
     <div className="text-white col-6 mx-auto mt-5 pt-3">
@@ -98,18 +129,57 @@ export default function SingleTicket() {
         <strong className="text-start">Description:</strong>{" "}
         <p className="border rounded-2 p-3 mt-2">{ticket.description}</p>
       </div>
-      <p className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between">
         <div className="d-flex align-items-center">
-          <div className="text-start me-3">Assigned:</div>{" "}
-          {ticket.assignedUsers.map((user) => (
-            <span key={user.id}>
-              {user.firstName} {user.lastName}
-              {ticket.assignedUsers.indexOf(user) !==
-              ticket.assignedUsers.length - 1
-                ? ", "
-                : ""}
-            </span>
-          ))}
+          <div className="text-start">
+            {ticket.assignedUsers.map((user) => (
+              <div key={user.id}>
+                {user.firstName} {user.lastName}{" "}
+              </div>
+            ))}
+          </div>
+          {isAdmin && (
+            <div className="d-flex align-items-center ms-3 mt-0">
+              <i className="bi bi-person-plus me-2"></i>
+              <div className="dropdown">
+                <button
+                  className="btn btn-secondary dropdown-toggle btn-sm"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Add User
+                </button>
+                <ul className="dropdown-menu">
+                  {allUsers.length > 0 ? (
+                    allUsers
+                      .filter(
+                        (user) =>
+                          !ticket.assignedUsers.some(
+                            (assigned) =>
+                              `${assigned.firstName} ${assigned.lastName}` ===
+                              user.fullName
+                          )
+                      )
+                      .map((user) => (
+                        <li key={user.id}>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => handleAssignUser(user.id)}
+                          >
+                            {user.fullName}
+                          </button>
+                        </li>
+                      ))
+                  ) : (
+                    <li>
+                      <span className="dropdown-item">No users available</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
         <div className="d-flex justify-content-end align-items-center">
           {ticket.status === "Open" ? (
@@ -131,7 +201,7 @@ export default function SingleTicket() {
             </>
           )}
         </div>
-      </p>
+      </div>
 
       {error && <p className="text-danger mt-3">{error}</p>}
     </div>
