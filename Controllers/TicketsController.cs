@@ -166,7 +166,7 @@ public class TicketsController : ControllerBase
     [Authorize]
     public IActionResult GetOptions()
     {
-        var categories = new[] { "Bug", "Feature Request", "Shop Issue", "Connection Issue", "Other" };
+        var categories = new[] { "Bug", "Shop Issue", "Connection Issue", "Other" };
         var games = new[] { "Ark:SA", "Ark:SE", "Palworld", "Empyrion", "Minecraft", "Eco" };
         var servers = new[] { "NA-East", "EU-West", "Asia" };
         return Ok(new { categories, games, servers });
@@ -292,8 +292,8 @@ public class TicketsController : ControllerBase
     public IActionResult GetTicketById(int id)
     {
         var ticket = _dbContext.Tickets
-            .Include(t => t.UserTickets) // Include UserTickets to get assigned users
-                .ThenInclude(ut => ut.UserProfile) // Include UserProfile for user details
+            .Include(t => t.UserTickets)
+                .ThenInclude(ut => ut.UserProfile)
             .Where(t => t.Id == id)
             .Select(t => new
             {

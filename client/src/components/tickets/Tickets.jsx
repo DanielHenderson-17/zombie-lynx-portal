@@ -69,7 +69,6 @@ export default function Tickets({ loggedInUser }) {
             path="new-ticket"
             element={<NewTicket loggedInUser={loggedInUser} />}
           />
-          {/* Passing fetchOpenTicketCount to OpenTickets */}
           <Route
             path="open-tickets"
             element={<OpenTickets onTicketChange={fetchOpenTicketCount} />}
@@ -79,7 +78,6 @@ export default function Tickets({ loggedInUser }) {
             element={<ClosedTickets onTicketChange={fetchOpenTicketCount} />}
           />
           <Route path="ticket/:ticketId" element={<SingleTicket />} />{" "}
-          {/* Add route for SingleTicket */}
         </Routes>
       </div>
     </div>

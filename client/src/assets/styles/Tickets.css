@@ -40,3 +40,7 @@ hr {
 .sub-text {
   color: rgb(150, 150, 150);
 }
+
+.gameImg {
+  height: 25px;
+}

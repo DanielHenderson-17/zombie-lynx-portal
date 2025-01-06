@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { getOpenTickets, closeTicketAPI } from "../../managers/ticketManager";
 
 export default function OpenTickets({ onTicketChange }) {
   const [tickets, setTickets] = useState([]);
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
 
   const fetchTickets = async () => {
     try {
@@ -23,7 +23,7 @@ export default function OpenTickets({ onTicketChange }) {
   }, []);
 
   const handleTicketClick = (ticketId) => {
-    navigate(`/tickets/ticket/${ticketId}`); // Navigate to SingleTicket
+    navigate(`/tickets/ticket/${ticketId}`);
   };
 
   const handleCloseTicket = async (ticketId) => {
@@ -68,8 +68,8 @@ export default function OpenTickets({ onTicketChange }) {
               .map((ticket) => (
                 <tr
                   key={ticket.id}
-                  onClick={() => handleTicketClick(ticket.id)} // Navigate on click
-                  style={{ cursor: "pointer" }} // Add pointer cursor
+                  onClick={() => handleTicketClick(ticket.id)}
+                  style={{ cursor: "pointer" }}
                 >
                   <td className="text-start col-4">
                     <div>
@@ -107,7 +107,7 @@ export default function OpenTickets({ onTicketChange }) {
                       <button
                         className="btn btn-danger btn-sm ticket-button"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent navigating when clicking this button
+                          e.stopPropagation();
                           handleCloseTicket(ticket.id);
                         }}
                       >
