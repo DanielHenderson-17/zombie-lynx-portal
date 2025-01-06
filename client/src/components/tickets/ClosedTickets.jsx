@@ -36,7 +36,7 @@ export default function ClosedTickets({ onTicketChange }) {
       setTickets((prevTickets) =>
         prevTickets.filter((ticket) => ticket.id !== ticketId)
       );
-      onTicketChange(); // Notify parent to update the open ticket count
+      onTicketChange();
     } catch (error) {
       console.error("Error restoring ticket:", error);
     }
@@ -69,7 +69,6 @@ export default function ClosedTickets({ onTicketChange }) {
               <th className="text-start col-4">Topic</th>
               <th className="text-start col-1">Game</th>
               <th className="text-start col-2">Server</th>
-              {/* <th className="text-start col-1">Status</th> */}
               <th className="text-end col-2 pe-3">Options</th>
             </tr>
           </thead>
@@ -111,9 +110,6 @@ export default function ClosedTickets({ onTicketChange }) {
                       {truncateText(ticket.server)}
                     </span>
                   </td>
-                  {/* <td className="text-start col-1">
-                    <span className="fw-bold text-danger">{ticket.status}</span>
-                  </td> */}
                   <td className="text-start col-2 position-relative">
                     <div className="d-flex justify-content-end pe-2">
                       <button

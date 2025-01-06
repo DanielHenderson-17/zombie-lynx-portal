@@ -55,7 +55,6 @@ export default function OpenTickets({ onTicketChange }) {
               <th className="text-start col-4">Topic</th>
               <th className="text-start col-1">Game</th>
               <th className="text-start col-2">Server</th>
-              {/* <th className="text-start col-1">Status</th> */}
               <th className="text-end col-2 pe-3">Options</th>
             </tr>
           </thead>
@@ -101,11 +100,6 @@ export default function OpenTickets({ onTicketChange }) {
                       {truncateText(ticket.server)}
                     </span>
                   </td>
-                  {/* <td className="text-start col-1">
-                    <span className="text-success fw-bold">
-                      {ticket.status}
-                    </span>
-                  </td> */}
                   <td className="text-start col-1 position-relative">
                     <div className="d-flex justify-content-end pe-2">
                       <button
