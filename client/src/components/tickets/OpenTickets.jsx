@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOpenTickets, closeTicketAPI } from "../../managers/ticketManager";
+import { getGameImage } from "../../utils/gameFormatter";
+import { truncateText } from "../../utils/truncateText";
 
 export default function OpenTickets({ onTicketChange }) {
   const [tickets, setTickets] = useState([]);
@@ -38,10 +40,6 @@ export default function OpenTickets({ onTicketChange }) {
     }
   };
 
-  function truncateText(text, maxLength = 20) {
-    return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
-  }
-
   if (error) {
     return <p className="text-danger">{error}</p>;
   }
@@ -57,7 +55,7 @@ export default function OpenTickets({ onTicketChange }) {
               <th className="text-start col-4">Topic</th>
               <th className="text-start col-1">Game</th>
               <th className="text-start col-2">Server</th>
-              <th className="text-start col-1">Status</th>
+              {/* <th className="text-start col-1">Status</th> */}
               <th className="text-end col-2 pe-3">Options</th>
             </tr>
           </thead>
@@ -90,18 +88,24 @@ export default function OpenTickets({ onTicketChange }) {
                     </div>
                   </td>
                   <td className="text-start col-1">
-                    <span className="text-warning fw-bold">{ticket.game}</span>
+                    <span className="text-warning fw-bold mx-auto">
+                      <img
+                        className="gameImg ms-1"
+                        src={getGameImage(ticket.game)}
+                        alt=""
+                      />
+                    </span>
                   </td>
                   <td className="text-start col-2">
-                    <span className="text-warning fw-bold">
+                    <span className="text-white fw-bold">
                       {truncateText(ticket.server)}
                     </span>
                   </td>
-                  <td className="text-start col-1">
+                  {/* <td className="text-start col-1">
                     <span className="text-success fw-bold">
                       {ticket.status}
                     </span>
-                  </td>
+                  </td> */}
                   <td className="text-start col-1 position-relative">
                     <div className="d-flex justify-content-end pe-2">
                       <button
