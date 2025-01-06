@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { createTicket, getTicketOptions } from "../../managers/ticketManager";
 import { getAllUsers } from "../../managers/userProfileManager";
 
@@ -74,7 +74,7 @@ export default function NewTicket() {
         assignedUserIds: [],
       });
       alert("Ticket created. Redirecting...");
-      navigate("/tickets/open-tickets"); // Navigate to the open tickets page
+      navigate("/tickets/open-tickets");
     } catch (error) {
       console.error("Error creating ticket:", error);
     }
@@ -85,7 +85,7 @@ export default function NewTicket() {
   }
 
   return (
-    <div className="new-ticket-form">
+    <div className="new-ticket-form col-6 mx-auto mt-5 pt-1 text-start">
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="subject" className="form-label text-white">
@@ -172,13 +172,15 @@ export default function NewTicket() {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            className="form-control"
+            className="form-control description-min-height"
             required
           />
         </div>
-        <button type="submit" className="btn btn-success">
-          Create Ticket
-        </button>
+        <div className="text-end">
+          <button type="submit" className="btn btn-success">
+            Create Ticket
+          </button>
+        </div>
       </form>
     </div>
   );

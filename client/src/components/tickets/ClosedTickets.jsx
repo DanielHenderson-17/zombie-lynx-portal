@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getClosedTickets,
   restoreTicketAPI,
@@ -14,6 +15,8 @@ export default function ClosedTickets({ onTicketChange }) {
   // State to manage error messages
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   // Fetch closed tickets
   const fetchTickets = async () => {
     try {
@@ -25,6 +28,7 @@ export default function ClosedTickets({ onTicketChange }) {
     }
   };
 
+  // Fetch tickets on component initialization
   useEffect(() => {
     fetchTickets();
   }, []);
@@ -54,12 +58,17 @@ export default function ClosedTickets({ onTicketChange }) {
     }
   };
 
+  // Handle clicking a ticket row to navigate
+  const handleTicketClick = (ticketId) => {
+    navigate(`/tickets/ticket/${ticketId}`);
+  };
+
   if (error) {
     return <p className="text-danger">{error}</p>;
   }
 
   return (
-    <div className="col-12 ticket-body">
+    <div className="col-12 h-100 ticket-body1">
       {tickets.length === 0 ? (
         <p className="mt-5 text-white">You have no tickets yet!</p>
       ) : (
@@ -77,7 +86,11 @@ export default function ClosedTickets({ onTicketChange }) {
               .slice()
               .reverse()
               .map((ticket) => (
-                <tr key={ticket.id}>
+                <tr
+                  key={ticket.id}
+                  onClick={() => handleTicketClick(ticket.id)}
+                  style={{ cursor: "pointer" }}
+                >
                   <td className="text-start col-4">
                     <div>
                       <strong className="text-white">{ticket.subject}</strong>
@@ -114,13 +127,19 @@ export default function ClosedTickets({ onTicketChange }) {
                     <div className="d-flex justify-content-end pe-2">
                       <button
                         className="btn btn-primary btn-sm ticket-button me-2"
-                        onClick={() => handleRestoreTicket(ticket.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRestoreTicket(ticket.id);
+                        }}
                       >
                         <i className="bi bi-arrow-counterclockwise"></i>
                       </button>
                       <button
                         className="btn btn-danger btn-sm ticket-button"
-                        onClick={() => handleDeleteTicket(ticket.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTicket(ticket.id);
+                        }}
                       >
                         <i className="bi bi-trash3"></i>
                       </button>

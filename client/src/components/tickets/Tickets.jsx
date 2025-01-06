@@ -21,6 +21,7 @@ export default function Tickets({ loggedInUser }) {
     }
   };
 
+  // Fetch the number of open tickets on component initialization
   useEffect(() => {
     fetchOpenTicketCount();
   }, []);
@@ -63,7 +64,7 @@ export default function Tickets({ loggedInUser }) {
       </div>
 
       {/* Main Content */}
-      <div className="col-9 border ticket-body1">
+      <div className="col-9 border">
         <Routes>
           <Route
             path="new-ticket"

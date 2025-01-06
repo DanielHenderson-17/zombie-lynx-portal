@@ -5,11 +5,14 @@ import { getGameImage } from "../../utils/gameFormatter";
 import { truncateText } from "../../utils/truncateText";
 
 export default function OpenTickets({ onTicketChange }) {
+  // State to store open tickets
   const [tickets, setTickets] = useState([]);
+  // State to manage error messages
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
+  // Fetch open tickets
   const fetchTickets = async () => {
     try {
       const data = await getOpenTickets();
@@ -20,6 +23,7 @@ export default function OpenTickets({ onTicketChange }) {
     }
   };
 
+  // Fetch tickets on component initialization
   useEffect(() => {
     fetchTickets();
   }, []);
@@ -28,6 +32,7 @@ export default function OpenTickets({ onTicketChange }) {
     navigate(`/tickets/ticket/${ticketId}`);
   };
 
+  // Handle closing a ticket
   const handleCloseTicket = async (ticketId) => {
     try {
       await closeTicketAPI(ticketId);
@@ -45,7 +50,7 @@ export default function OpenTickets({ onTicketChange }) {
   }
 
   return (
-    <div>
+    <div className="col-12 h-100 ticket-body1">
       {tickets.length === 0 ? (
         <p className="mt-5 pt-4 text-white">You have no open tickets.</p>
       ) : (

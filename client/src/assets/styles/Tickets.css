@@ -2,10 +2,6 @@
   min-width: 100% !important;
 }
 
-.ticket-button {
-  /* width: 75px; */
-}
-
 .ticket-id {
   bottom: 5px;
   right: -30px;
@@ -27,6 +23,10 @@
 .ticket-body1 {
   overflow-y: scroll;
   overflow-x: hidden;
+}
+
+.description-min-height {
+  min-height: 150px !important;
 }
 
 .closed-status {
