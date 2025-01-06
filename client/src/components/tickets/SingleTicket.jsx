@@ -21,14 +21,14 @@ export default function SingleTicket() {
     };
 
     fetchTicket();
-  }, [ticketId]);
+  }, [ticketId, ticket]);
 
   if (!ticket) {
     return <p>Loading ticket details...</p>;
   }
 
   return (
-    <div className="text-white col-6 mx-auto mt-5">
+    <div className="text-white col-6 mx-auto mt-5 pt-5">
       <h2 className="text-start mb-2 fs-2 ms-1">{ticket.subject}</h2>
       <div className="d-flex justify-content-between mb-3">
         <div className="d-flex align-items-center fs-5">
