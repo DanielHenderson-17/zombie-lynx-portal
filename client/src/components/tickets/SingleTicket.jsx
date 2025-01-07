@@ -29,9 +29,8 @@ export default function SingleTicket() {
 
         // Check if the user is an admin by attempting to fetch the list of all users
         const users = await getAllUsers();
-        console.log("Fetched users:", users); // Log all users
         setAllUsers(users);
-        setIsAdmin(true); // If this succeeds, the user is an admin
+        setIsAdmin(true);
       } catch (error) {
         if (error.message.includes("403")) {
           console.warn(
@@ -83,9 +82,9 @@ export default function SingleTicket() {
   // Assign user to the ticket
   const handleAssignUser = async (userId) => {
     try {
-      await assignUserToTicket(ticketId, userId); // Post the user assignment to the server
-      const updatedTicket = await getTicketById(ticketId); // Fetch the updated ticket details
-      setTicket(updatedTicket); // Update state and trigger re-render
+      await assignUserToTicket(ticketId, userId);
+      const updatedTicket = await getTicketById(ticketId);
+      setTicket(updatedTicket);
     } catch (error) {
       console.error("Error assigning user to ticket:", error);
       setError("Failed to assign user.");
@@ -95,9 +94,6 @@ export default function SingleTicket() {
   if (!ticket) {
     return <p>Loading ticket details...</p>;
   }
-
-  console.log("Assigned Users:", ticket.assignedUsers);
-  console.log("All Users:", allUsers);
 
   return (
     <div className="text-white col-6 mx-auto mt-5 pt-3">
@@ -126,14 +122,24 @@ export default function SingleTicket() {
         {formatLongDateTime(ticket.updatedAt)}
       </small>
       <div className="text-start">
-        <strong className="text-start">Description:</strong>{" "}
+        <strong className="text-start">
+          Description:
+          {isAdmin && (
+            <button
+              className="btn btn-link p-0 ms-2"
+              onClick={() => navigate(`/tickets/ticket/${ticket.id}/edit`)}
+            >
+              <i className="bi bi-pencil-square"></i>
+            </button>
+          )}
+        </strong>{" "}
         <p className="border rounded-2 p-3 mt-2">{ticket.description}</p>
       </div>
       <div className="d-flex justify-content-between">
         <div className="d-flex align-items-center">
           <div className="text-start">
             {ticket.assignedUsers.map((user) => (
-              <div key={user.id}>
+              <div key={`${user.firstName}-${user.lastName}`}>
                 {user.firstName} {user.lastName}{" "}
               </div>
             ))}
@@ -162,7 +168,7 @@ export default function SingleTicket() {
                           )
                       )
                       .map((user) => (
-                        <li key={user.id}>
+                        <li key={user.firstName.id}>
                           <button
                             className="dropdown-item"
                             onClick={() => handleAssignUser(user.id)}

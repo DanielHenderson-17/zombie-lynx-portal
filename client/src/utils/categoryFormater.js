@@ -1,3 +1,4 @@
+// Sets the icon for the category based on the category name
 export const categoryFormatter = (category) => {
   switch (category) {
     case "Bug":

@@ -1,3 +1,4 @@
+// Function to format a date string to a long date time string (e.g., "September 1, 2021 12:00 PM")
 export const formatLongDateTime = (date) => {
   const dateObj = new Date(date);
 

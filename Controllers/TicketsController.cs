@@ -18,7 +18,7 @@ public class TicketsController : ControllerBase
         _dbContext = context;
     }
 
-    // Retrieves all open tickets
+    // Retrieves all open tickets or tickets assigned to the current user based on role
     [HttpGet("open")]
     [Authorize]
     public IActionResult GetOpenTickets()
@@ -60,7 +60,7 @@ public class TicketsController : ControllerBase
         return Ok(ticketsQuery.ToList());
     }
 
-    // Retrieves all closed tickets
+    // Retrieves all closed tickets or tickets assigned to the current user based on role
     [HttpGet("closed")]
     [Authorize]
     public IActionResult GetClosedTickets()
@@ -102,7 +102,7 @@ public class TicketsController : ControllerBase
         return Ok(ticketsQuery.ToList());
     }
 
-    // Closes a specific ticket
+    // Updates a specific ticket to closed status
     [HttpPut("{id}/close")]
     [Authorize]
     public IActionResult CloseTicket(int id)
@@ -120,7 +120,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
-    // Restores a specific ticket to open status
+    // Updates a specific ticket to open status
     [HttpPut("{id}/restore")]
     [Authorize]
     public IActionResult RestoreTicket(int id)
@@ -138,7 +138,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
-    // Deletes a specific ticket
+    // Deletes a specific ticket if it is closed
     [HttpDelete("{id}")]
     [Authorize]
     public IActionResult DeleteTicket(int id)
@@ -161,7 +161,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
-    // Retrieves options for ticket creation
+    // Retrieves options for ticket creation form (categories, games, servers)
     [HttpGet("options")]
     [Authorize]
     public IActionResult GetOptions()
@@ -186,7 +186,7 @@ public class TicketsController : ControllerBase
         return Ok(users);
     }
 
-    // Creates a new ticket
+    // Creates a new ticket via POST request form data
     // Parse JSON directly from the HTTP request body
     [HttpPost]
     [Authorize]
@@ -286,7 +286,7 @@ public class TicketsController : ControllerBase
         });
     }
 
-    // Retrieves a ticket by its ID
+    // Retrieves a ticket by its Id with assigned users
     [HttpGet("{id}")]
     [Authorize]
     public IActionResult GetTicketById(int id)
@@ -322,7 +322,7 @@ public class TicketsController : ControllerBase
         return Ok(ticket);
     }
 
-    // Assign a user to a ticket
+    // Assign a user to a ticket by Id (Admin only)
     [HttpPost("{id}/assign-user")]
     [Authorize(Roles = "Admin")]
     public IActionResult AssignUserToTicket(int id, [FromBody] int userId)
@@ -357,6 +357,44 @@ public class TicketsController : ControllerBase
         _dbContext.SaveChanges();
 
         return NoContent();
+    }
+
+    // Edit a ticket by Id 
+    [HttpPut("{id}/edit")]
+    [Authorize]
+    public IActionResult EditTicket(int id, [FromBody] EditTicketDTO editTicketDto)
+    {
+        if (editTicketDto == null)
+        {
+            return BadRequest("Invalid ticket data.");
+        }
+
+        var ticket = _dbContext.Tickets.SingleOrDefault(t => t.Id == id);
+        if (ticket == null)
+        {
+            return NotFound($"Ticket with ID {id} not found.");
+        }
+
+        ticket.Subject = editTicketDto.Subject;
+        ticket.Category = editTicketDto.Category;
+        ticket.Game = editTicketDto.Game;
+        ticket.Server = editTicketDto.Server;
+        ticket.Description = editTicketDto.Description;
+        ticket.UpdatedAt = DateTime.UtcNow;
+
+        _dbContext.SaveChanges();
+
+        // Return the updated ticket as a response
+        return Ok(new
+        {
+            ticket.Id,
+            ticket.Subject,
+            ticket.Category,
+            ticket.Game,
+            ticket.Server,
+            ticket.Description,
+            ticket.UpdatedAt
+        });
     }
 
 }

@@ -8,21 +8,18 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
   const [open, setOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
 
+  // Fetches user profiles and sets the profile of the currently logged-in user based on matching identityUserId or id.
   useEffect(() => {
     if (loggedInUser) {
-      console.log("Logged in user:", loggedInUser);
       getUserProfiles()
         .then((profiles) => {
-          console.log("Fetched profiles:", profiles);
           if (Array.isArray(profiles)) {
             const profile = profiles.find(
               (p) =>
                 p.identityUserId === loggedInUser.id || p.id === loggedInUser.id
             );
-            console.log("Matched profile from array:", profile);
             setUserProfile(profile);
           } else {
-            console.log("Fetched a single profile:", profiles);
             if (
               profiles.identityUserId === loggedInUser.id ||
               profiles.id === loggedInUser.id

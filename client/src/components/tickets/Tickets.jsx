@@ -3,6 +3,7 @@ import OpenTickets from "./OpenTickets";
 import ClosedTickets from "./ClosedTickets";
 import NewTicket from "./NewTicket";
 import SingleTicket from "./SingleTicket";
+import EditTicket from "./EditTicket";
 import "../../assets/styles/tickets.css";
 import { useEffect, useState } from "react";
 import { getOpenTickets } from "../../managers/ticketManager";
@@ -66,6 +67,7 @@ export default function Tickets({ loggedInUser }) {
       {/* Main Content */}
       <div className="col-9 border">
         <Routes>
+          <Route path="ticket/:ticketId/edit" element={<EditTicket />} />
           <Route
             path="new-ticket"
             element={<NewTicket loggedInUser={loggedInUser} />}

@@ -1,7 +1,7 @@
 const _apiUrl = "/api/tickets";
 
 export const getOpenTickets = () => {
-  return fetch("/api/tickets/open")
+  return fetch(`${_apiUrl}/open`)
     .then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -15,7 +15,7 @@ export const getOpenTickets = () => {
 };
 
 export const getClosedTickets = () => {
-  return fetch("/api/tickets/closed")
+  return fetch(`${_apiUrl}/closed`)
     .then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -48,7 +48,7 @@ export const restoreTicketAPI = (ticketId) => {
 
 export const createTicket = (ticket) => {
   console.log("Payload being sent:", ticket);
-  return fetch("/api/tickets", {
+  return fetch(_apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export const getTicketOptions = () => {
 };
 
 export const getTicketById = async (id) => {
-  const response = await fetch(`/api/tickets/${id}`);
+  const response = await fetch(`${_apiUrl}/${id}`);
   if (!response.ok) {
     throw new Error(`Error fetching ticket with ID ${id}`);
   }
@@ -105,7 +105,7 @@ export const getTicketById = async (id) => {
 };
 
 export const assignUserToTicket = (ticketId, userId) => {
-  return fetch(`/api/tickets/${ticketId}/assign-user`, {
+  return fetch(`${_apiUrl}/${ticketId}/assign-user`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -119,7 +119,7 @@ export const assignUserToTicket = (ticketId, userId) => {
 };
 
 export const getAllUsers = () => {
-  return fetch("/api/tickets/users")
+  return fetch(`${_apiUrl}/users`)
     .then((res) => {
       if (!res.ok) {
         throw new Error(`Error fetching users: ${res.statusText}`);
@@ -130,4 +130,29 @@ export const getAllUsers = () => {
       console.error("Error fetching users:", error);
       throw error;
     });
+};
+
+export const editTicket = (ticketId, updatedTicket) => {
+  return fetch(`${_apiUrl}/${ticketId}/edit`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedTicket),
+  }).then((res) => {
+    if (!res.ok) {
+      return res.json().then((error) => {
+        throw new Error(
+          `Error editing ticket: ${res.status}, message: ${error.message}`
+        );
+      });
+    }
+
+    // Handle 204 No Content response
+    if (res.status === 204) {
+      return null;
+    }
+
+    return res.json();
+  });
 };

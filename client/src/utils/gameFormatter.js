@@ -1,3 +1,4 @@
+// Sets the image for the game based on the game name
 export const getGameImage = (gameName) => {
   switch (gameName) {
     case "Eco":
