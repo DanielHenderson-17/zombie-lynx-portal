@@ -121,4 +121,20 @@ public class UserProfileController : ControllerBase
         _dbContext.SaveChanges();
         return NoContent();
     }
+
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetAllUsers()
+    {
+        // Fetch all users from IdentityUser
+        var users = _dbContext.Users.Select(user => new
+        {
+            user.Id,
+            user.UserName,
+            user.Email
+        }).ToList();
+
+        return Ok(users);
+    }
+
 }

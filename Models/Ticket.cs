@@ -14,4 +14,6 @@ public class Ticket
 
     public int UserProfileId { get; set; }
     public UserProfile UserProfile { get; set; }
+
+    public ICollection<UserTicket> UserTickets { get; set; }
 }

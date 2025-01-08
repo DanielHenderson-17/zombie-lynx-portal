@@ -1,5 +1,19 @@
 const _apiUrl = "/api/userprofile";
 
+export const getAllUsers = () => {
+  return fetch(`${_apiUrl}/all`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Error fetching users: ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching all users:", error);
+      throw error;
+    });
+};
+
 export const getUserProfiles = () => {
   return fetch(_apiUrl).then((res) => res.json());
 };

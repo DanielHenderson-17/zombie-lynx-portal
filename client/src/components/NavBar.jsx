@@ -10,19 +10,15 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
 
   useEffect(() => {
     if (loggedInUser) {
-      console.log("Logged in user:", loggedInUser);
       getUserProfiles()
         .then((profiles) => {
-          console.log("Fetched profiles:", profiles);
           if (Array.isArray(profiles)) {
             const profile = profiles.find(
               (p) =>
                 p.identityUserId === loggedInUser.id || p.id === loggedInUser.id
             );
-            console.log("Matched profile from array:", profile);
             setUserProfile(profile);
           } else {
-            console.log("Fetched a single profile:", profiles);
             if (
               profiles.identityUserId === loggedInUser.id ||
               profiles.id === loggedInUser.id
@@ -39,12 +35,9 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
     }
   }, [loggedInUser]);
 
-  // eslint-disable-next-line no-unused-vars
-  const toggleNavbar = () => setOpen(!open);
-
   return (
     <nav className="navbar navbar-expand-lg fixed-top p-0 mx-auto w-100 zlg-nav-bar bg-dark">
-      <div className="container d-flex justify-content-between align-items-center">
+      <div className="container-fluid px-md-5 px-2">
         {/* Logo */}
         <RRNavLink className="navbar-brand" to="/">
           <img
@@ -54,31 +47,70 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
           />
         </RRNavLink>
 
-        {/* Links Section */}
-        <div className="d-flex justify-content-center flex-grow-1">
-          {/* <RRNavLink className="nav-link text-white mx-3" to="/">
-            Open Tickets
-          </RRNavLink>
-          <RRNavLink className="nav-link text-white mx-3" to="/closed-tickets">
-            Closed Tickets
-          </RRNavLink> */}
+        {/* Desktop Menu */}
+        <div className="d-none d-lg-flex align-items-center">
+          {loggedInUser && (
+            <>
+              {userProfile ? (
+                <span className="navbar-text me-3 text-white">
+                  {userProfile.email}
+                </span>
+              ) : (
+                <span className="navbar-text me-3 text-white">Loading...</span>
+              )}
+              <button
+                className="btn btn-primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logout().then(() => {
+                    setLoggedInUser(null);
+                    setOpen(false);
+                  });
+                }}
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
 
-        {/* Email and Logout Section */}
-        {loggedInUser && (
-          <div className="d-flex align-items-center">
+        {/* Mobile Hamburger Menu */}
+        <div className="d-flex d-lg-none align-items-center">
+          {loggedInUser && (
+            <button
+              className="btn btn-dark navbar-toggler border-0"
+              type="button"
+              aria-expanded={open}
+              onClick={() => setOpen(!open)}
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Backdrop (Dim Background) */}
+      {open && <div className="backdrop" onClick={() => setOpen(false)}></div>}
+
+      {/* Slide-Out Mobile Menu */}
+      {open && (
+        <div className="mobile-menu bg-dark text-white position-absolute top-0 end-0 vh-100 w-75 d-lg-none">
+          <div className="d-flex justify-content-end p-3">
+            <button
+              className="btn btn-close btn-close-white"
+              onClick={() => setOpen(false)}
+            ></button>
+          </div>
+          <div className="p-4">
             {userProfile ? (
-              <span className="navbar-text me-3 text-white">
-                {userProfile.email}
-              </span>
+              <div className="mb-4">{userProfile.email}</div>
             ) : (
-              <span className="navbar-text me-3 text-white">Loading...</span>
+              <div className="mb-4">Loading...</div>
             )}
             <button
-              className="btn btn-primary"
+              className="btn btn-primary w-100"
               onClick={(e) => {
                 e.preventDefault();
-                setOpen(false);
                 logout().then(() => {
                   setLoggedInUser(null);
                   setOpen(false);
@@ -88,8 +120,8 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
               Logout
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

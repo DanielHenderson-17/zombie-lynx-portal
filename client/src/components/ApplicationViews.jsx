@@ -12,7 +12,7 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           index
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
-              <Tickets />
+              <Tickets loggedInUser={loggedInUser} />
             </AuthorizedRoute>
           }
         />
@@ -20,7 +20,7 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           path="tickets/*"
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
-              <Tickets />
+              <Tickets loggedInUser={loggedInUser} />
             </AuthorizedRoute>
           }
         />
