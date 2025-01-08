@@ -26,7 +26,7 @@ export default function Tickets({ loggedInUser }) {
   }, []);
 
   return (
-    <div className="d-flex flex-column flex-lg-row ticket-container mt-5">
+    <div className="d-flex flex-column flex-lg-row ticket-container mt-md-5 mt-4">
       {/* Sidebar for Desktop Navigation */}
       <div className="col-lg-3 border p-3 ticket-nav d-none d-lg-block">
         <div>

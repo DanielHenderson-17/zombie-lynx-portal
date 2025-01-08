@@ -81,7 +81,7 @@ export default function EditTicket() {
   }
 
   return (
-    <div className="edit-ticket-form col-6 mx-auto mt-5 pt-1 text-start">
+    <div className="edit-ticket-form col-md-6 col-10 mx-auto mt-5 pt-1 text-start">
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="subject" className="form-label text-white">

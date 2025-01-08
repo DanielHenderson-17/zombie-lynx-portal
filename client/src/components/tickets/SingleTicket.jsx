@@ -43,6 +43,8 @@ export default function SingleTicket() {
       }
     };
 
+    console.log("Ticket ID:", ticketId);
+
     fetchTicket();
   }, [ticketId]);
 
@@ -96,9 +98,9 @@ export default function SingleTicket() {
   }
 
   return (
-    <div className="text-white col-6 mx-auto mt-5 pt-3">
-      <h2 className="text-start mb-1 fs-2">{ticket.subject}</h2>
-      <div className="d-flex justify-content-between mb-1">
+    <div className="text-white col-md-6 col-11 mx-auto mt-5 pt-3">
+      <h2 className="text-start mb-1 subject-font">{ticket.subject}</h2>
+      <div className="d-md-flex d-block justify-content-between mb-1">
         <div className="d-flex align-items-center fs-5">
           <div
             className="me-2"
@@ -117,7 +119,10 @@ export default function SingleTicket() {
           {ticket.server}
         </div>
       </div>
-      <small className="text-start d-block mb-3" style={{ fontSize: "0.7rem" }}>
+      <small
+        className="text-start d-block mb-3 ms-1"
+        style={{ fontSize: "0.7rem" }}
+      >
         <i className="bi bi-calendar-date me-2"></i>
         {formatLongDateTime(ticket.updatedAt)}
       </small>
@@ -135,17 +140,18 @@ export default function SingleTicket() {
         </strong>{" "}
         <p className="border rounded-2 p-3 mt-2">{ticket.description}</p>
       </div>
-      <div className="d-flex justify-content-between">
-        <div className="d-flex align-items-center">
-          <div className="text-start">
-            {ticket.assignedUsers.map((user) => (
-              <div key={`${user.firstName}-${user.lastName}`}>
-                {user.firstName} {user.lastName}{" "}
+      <div className="row">
+        <div className="col-12 col-md-7 d-flex align-items-center">
+          <div className="text-start col-8 col-md-5 d-flex">
+            {ticket.assignedUsers.map((user, index) => (
+              <div key={`${user.firstName}-${user.lastName}`} className="me-2">
+                {user.firstName}
+                {index < ticket.assignedUsers.length - 1 && ","}
               </div>
             ))}
           </div>
           {isAdmin && (
-            <div className="d-flex align-items-center ms-3 mt-0">
+            <div className="d-flex align-items-center ms-3 mt-0 col-4 col-md-7">
               <i className="bi bi-person-plus me-2"></i>
               <div className="dropdown">
                 <button
@@ -187,10 +193,10 @@ export default function SingleTicket() {
             </div>
           )}
         </div>
-        <div className="d-flex justify-content-end align-items-center">
+        <div className="col-12 col-md-5 d-flex justify-content-end mt-4 mt-md-0">
           {ticket.status === "Open" ? (
             <button className="btn btn-danger" onClick={handleCloseTicket}>
-              Close Ticket <i className="bi bi-x-circle ms-2"></i>
+              Close <i className="bi bi-x-circle ms-2"></i>
             </button>
           ) : (
             <>
@@ -198,11 +204,10 @@ export default function SingleTicket() {
                 className="btn btn-primary me-2"
                 onClick={handleRestoreTicket}
               >
-                Restore Ticket{" "}
-                <i className="bi bi-arrow-counterclockwise ms-2"></i>
+                Restore <i className="bi bi-arrow-counterclockwise ms-2"></i>
               </button>
               <button className="btn btn-danger" onClick={handleDeleteTicket}>
-                Delete Ticket <i className="bi bi-trash3 ms-2"></i>
+                Delete<i className="bi bi-trash3 ms-2"></i>
               </button>
             </>
           )}

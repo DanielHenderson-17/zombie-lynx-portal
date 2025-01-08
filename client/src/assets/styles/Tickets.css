@@ -76,3 +76,21 @@ hr {
 .ticket-container .flex-grow-1 {
   margin-bottom: 60px;
 }
+
+@media (max-width: 767.98px) {
+  .subject-font {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .subject-font {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ticket-container {
+    height: 90vh;
+  }
+}
