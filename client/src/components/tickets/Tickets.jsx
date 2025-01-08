@@ -1,4 +1,4 @@
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import OpenTickets from "./OpenTickets";
 import ClosedTickets from "./ClosedTickets";
 import NewTicket from "./NewTicket";
@@ -9,10 +9,9 @@ import { useEffect, useState } from "react";
 import { getOpenTickets } from "../../managers/ticketManager";
 
 export default function Tickets({ loggedInUser }) {
-  // State to store the count of open tickets
   const [openTicketCount, setOpenTicketCount] = useState(0);
+  const location = useLocation();
 
-  // Fetch the number of open tickets
   const fetchOpenTicketCount = async () => {
     try {
       const tickets = await getOpenTickets();
@@ -22,15 +21,14 @@ export default function Tickets({ loggedInUser }) {
     }
   };
 
-  // Fetch the number of open tickets on component initialization
   useEffect(() => {
     fetchOpenTicketCount();
   }, []);
 
   return (
-    <div className="d-flex justify-content-between ticket mt-5 ticket-container">
-      {/* Sidebar for Navigation */}
-      <div className="col-3 border p-3 ticket-nav">
+    <div className="d-flex flex-column flex-lg-row ticket-container mt-5">
+      {/* Sidebar for Desktop Navigation */}
+      <div className="col-lg-3 border p-3 ticket-nav d-none d-lg-block">
         <div>
           {/* New Ticket Button */}
           <Link
@@ -65,7 +63,7 @@ export default function Tickets({ loggedInUser }) {
       </div>
 
       {/* Main Content */}
-      <div className="col-9 border">
+      <div className="flex-grow-1 mb-0">
         <Routes>
           <Route path="ticket/:ticketId/edit" element={<EditTicket />} />
           <Route
@@ -80,8 +78,57 @@ export default function Tickets({ loggedInUser }) {
             path="closed-tickets"
             element={<ClosedTickets onTicketChange={fetchOpenTicketCount} />}
           />
-          <Route path="ticket/:ticketId" element={<SingleTicket />} />{" "}
+          <Route path="ticket/:ticketId" element={<SingleTicket />} />
         </Routes>
+      </div>
+
+      {/* Bottom Navigation for Mobile */}
+      <div className="d-lg-none fixed-bottom bg-dark text-white bottom-nav">
+        <div className="d-flex justify-content-around pt-2 pb-1 my-1">
+          {/* New Ticket Button */}
+          <Link
+            to="/tickets/new-ticket"
+            className={`text-decoration-none text-white ${
+              location.pathname === "/tickets/new-ticket" ? "active" : ""
+            }`}
+          >
+            <div className="d-flex flex-column align-items-center">
+              <i className="bi bi-plus-circle fs-4"></i>
+              {/* <small>Create</small> */}
+            </div>
+          </Link>
+
+          {/* Open Tickets Button */}
+          <Link
+            to="/tickets/open-tickets"
+            className={`text-decoration-none text-white ${
+              location.pathname === "/tickets/open-tickets" ? "active" : ""
+            }`}
+          >
+            <div className="d-flex flex-column align-items-center position-relative">
+              <i className="bi bi-inbox fs-4 mt-1"></i>
+              {/* <small>Open</small> */}
+              {openTicketCount > 0 && (
+                <span className="badge bg-primary position-absolute top-0 start-50 translate-middle">
+                  {openTicketCount}
+                </span>
+              )}
+            </div>
+          </Link>
+
+          {/* Closed Tickets Button */}
+          <Link
+            to="/tickets/closed-tickets"
+            className={`text-decoration-none text-white ${
+              location.pathname === "/tickets/closed-tickets" ? "active" : ""
+            }`}
+          >
+            <div className="d-flex flex-column align-items-center">
+              <i className="bi bi-trash3 fs-4"></i>
+              {/* <small>Trash</small> */}
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   );

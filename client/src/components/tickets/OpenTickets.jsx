@@ -57,9 +57,11 @@ export default function OpenTickets({ onTicketChange }) {
         <table className="table table-dark table-striped align-middle">
           <thead className="thead-dark">
             <tr>
-              <th className="text-start col-4">Topic</th>
-              <th className="text-start col-1">Game</th>
-              <th className="text-start col-2">Server</th>
+              <th className="text-start col-md-4 col-8">Topic</th>
+              <th className="text-start col-1 d-none d-lg-table-cell">Game</th>
+              <th className="text-start col-2 d-none d-lg-table-cell">
+                Server
+              </th>
               <th className="text-end col-2 pe-3">Options</th>
             </tr>
           </thead>
@@ -75,23 +77,34 @@ export default function OpenTickets({ onTicketChange }) {
                 >
                   <td className="text-start col-4">
                     <div>
-                      <strong className="text-white">{ticket.subject}</strong>
-                      <br />
-                      <small className="sub-text">{ticket.category}</small>
-                      <br />
+                      <strong className="text-white">
+                        {truncateText(ticket.subject, 35)}
+                      </strong>
+                      <div className="d-flex">
+                        <small className="sub-text col-4">
+                          {ticket.category}
+                        </small>
+                      </div>
+                      <div className="d-md-none d-flex">
+                        <img
+                          className="gameImg2 me-2"
+                          src={getGameImage(ticket.game)}
+                          alt=""
+                        />
+                        <small>{ticket.server}</small>
+                      </div>
                       <small className="sub-text">
                         {new Date(ticket.createdAt).toLocaleString()}
                       </small>
                       <br />
                       <small className="sub-text">
-                        Assigned:{" "}
                         {ticket.assignedUsers
-                          .map((user) => `${user.firstName} ${user.lastName}`)
+                          .map((user) => `${user.firstName}`)
                           .join(", ")}
                       </small>
                     </div>
                   </td>
-                  <td className="text-start col-1">
+                  <td className="text-start col-1 d-none d-lg-table-cell">
                     <span className="text-warning fw-bold mx-auto">
                       <img
                         className="gameImg ms-1"
@@ -100,7 +113,7 @@ export default function OpenTickets({ onTicketChange }) {
                       />
                     </span>
                   </td>
-                  <td className="text-start col-2">
+                  <td className="text-start col-2 d-none d-lg-table-cell">
                     <span className="text-white fw-bold">
                       {truncateText(ticket.server)}
                     </span>

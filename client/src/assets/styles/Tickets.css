@@ -44,3 +44,35 @@ hr {
 .gameImg {
   height: 25px;
 }
+
+.gameImg2 {
+  height: 20px;
+}
+
+/* Sidebar */
+.ticket-nav {
+  display: block;
+  height: auto;
+  background-color: #343a40;
+  color: white;
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-nav .active {
+  color: #0d6efd;
+}
+
+.bottom-nav .badge {
+  font-size: 0.6rem;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.ticket-container .flex-grow-1 {
+  margin-bottom: 60px;
+}

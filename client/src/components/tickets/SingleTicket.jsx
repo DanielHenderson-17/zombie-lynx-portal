@@ -129,7 +129,7 @@ export default function SingleTicket() {
               className="btn btn-link p-0 ms-2"
               onClick={() => navigate(`/tickets/ticket/${ticket.id}/edit`)}
             >
-              <i className="bi bi-pencil-square"></i>
+              <i className="bi bi-pencil fs-6"></i>
             </button>
           )}
         </strong>{" "}
