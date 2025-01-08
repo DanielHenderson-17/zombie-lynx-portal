@@ -9,15 +9,13 @@ import { truncateText } from "../../utils/truncateText";
 import { getGameImage } from "../../utils/gameFormatter";
 
 export default function ClosedTickets({ onTicketChange }) {
-  // State to store closed tickets
   const [tickets, setTickets] = useState([]);
-
-  // State to manage error messages
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   const navigate = useNavigate();
 
-  // Fetch closed tickets
   const fetchTickets = async () => {
     try {
       const data = await getClosedTickets();
@@ -25,15 +23,26 @@ export default function ClosedTickets({ onTicketChange }) {
     } catch (error) {
       console.error("Error fetching closed tickets:", error);
       setError("Failed to fetch closed tickets. Please try again.");
+    } finally {
+      setFetching(false);
     }
   };
 
-  // Fetch tickets on component initialization
   useEffect(() => {
+    // Start the fetch
     fetchTickets();
-  }, []);
 
-  // Handle restoring a ticket
+    // Set a timeout to show the loading message if fetching takes longer than 1 second
+    const timeout = setTimeout(() => {
+      if (fetching) {
+        setLoading(true);
+      }
+    }, 1000);
+
+    // Cleanup timeout if fetching finishes before timeout
+    return () => clearTimeout(timeout);
+  }, [fetching]);
+
   const handleRestoreTicket = async (ticketId) => {
     try {
       await restoreTicketAPI(ticketId);
@@ -46,7 +55,6 @@ export default function ClosedTickets({ onTicketChange }) {
     }
   };
 
-  // Handle deleting a ticket
   const handleDeleteTicket = async (ticketId) => {
     try {
       await deleteTicket(ticketId);
@@ -58,13 +66,20 @@ export default function ClosedTickets({ onTicketChange }) {
     }
   };
 
-  // Handle clicking a ticket row to navigate
   const handleTicketClick = (ticketId) => {
     navigate(`/tickets/ticket/${ticketId}`);
   };
 
   if (error) {
     return <p className="text-danger">{error}</p>;
+  }
+
+  if (loading) {
+    return <p className="mt-5 text-white">Loading tickets...</p>;
+  }
+
+  if (fetching) {
+    return null;
   }
 
   return (
@@ -75,9 +90,11 @@ export default function ClosedTickets({ onTicketChange }) {
         <table className="table table-dark table-striped align-middle">
           <thead className="thead-dark">
             <tr>
-              <th className="text-start col-4">Topic</th>
-              <th className="text-start col-1">Game</th>
-              <th className="text-start col-2">Server</th>
+              <th className="text-start col-md-4 col-8">Topic</th>
+              <th className="text-start col-1 d-none d-lg-table-cell">Game</th>
+              <th className="text-start col-2 d-none d-lg-table-cell">
+                Server
+              </th>
               <th className="text-end col-2 pe-3">Options</th>
             </tr>
           </thead>
@@ -93,24 +110,35 @@ export default function ClosedTickets({ onTicketChange }) {
                 >
                   <td className="text-start col-4">
                     <div>
-                      <strong className="text-white">{ticket.subject}</strong>
-                      <br />
-                      <small className="sub-text">{ticket.category}</small>
-                      <br />
+                      <strong className="text-white">
+                        {truncateText(ticket.subject, 35)}
+                      </strong>
+                      <div className="d-flex">
+                        <strong className="sub-text col-12">
+                          {ticket.category}
+                        </strong>
+                      </div>
+                      <div className="d-md-none d-flex">
+                        <img
+                          className="gameImg2 me-2 my-auto"
+                          src={getGameImage(ticket.game)}
+                          alt=""
+                        />
+                        <small>{ticket.server}</small>
+                      </div>
                       <small className="sub-text">
                         {new Date(ticket.createdAt).toLocaleString()}
                       </small>
                       <br />
                       <small className="sub-text">
-                        Assigned:{" "}
                         {ticket.assignedUsers
-                          .map((user) => `${user.firstName} ${user.lastName}`)
-                          .join(", ")}{" "}
+                          .map((user) => `${user.firstName}`)
+                          .join(", ")}
                       </small>
                     </div>
                   </td>
-                  <td className="text-start col-1">
-                    <span className="text-warning fw-bold">
+                  <td className="text-start col-1 d-none d-lg-table-cell">
+                    <span className="text-warning fw-bold mx-auto">
                       <img
                         className="gameImg ms-1"
                         src={getGameImage(ticket.game)}
@@ -118,12 +146,12 @@ export default function ClosedTickets({ onTicketChange }) {
                       />
                     </span>
                   </td>
-                  <td className="text-start col-2">
+                  <td className="text-start col-2 d-none d-lg-table-cell">
                     <span className="text-white fw-bold">
                       {truncateText(ticket.server)}
                     </span>
                   </td>
-                  <td className="text-start col-2 position-relative">
+                  <td className="text-start col-1 position-relative">
                     <div className="d-flex justify-content-end pe-2">
                       <button
                         className="btn btn-primary btn-sm ticket-button me-2"

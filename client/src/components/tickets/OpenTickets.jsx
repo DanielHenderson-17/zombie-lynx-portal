@@ -5,14 +5,13 @@ import { getGameImage } from "../../utils/gameFormatter";
 import { truncateText } from "../../utils/truncateText";
 
 export default function OpenTickets({ onTicketChange }) {
-  // State to store open tickets
   const [tickets, setTickets] = useState([]);
-  // State to manage error messages
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   const navigate = useNavigate();
 
-  // Fetch open tickets
   const fetchTickets = async () => {
     try {
       const data = await getOpenTickets();
@@ -20,19 +19,30 @@ export default function OpenTickets({ onTicketChange }) {
     } catch (error) {
       console.error("Error fetching open tickets:", error);
       setError("Failed to fetch open tickets. Please try again.");
+    } finally {
+      setFetching(false);
     }
   };
 
-  // Fetch tickets on component initialization
   useEffect(() => {
+    // Start fetching tickets
     fetchTickets();
-  }, []);
+
+    // Set a timeout to show the loading message if fetching takes longer than 1 second
+    const timeout = setTimeout(() => {
+      if (fetching) {
+        setLoading(true);
+      }
+    }, 1000);
+
+    // Cleanup timeout if fetching finishes before the timeout
+    return () => clearTimeout(timeout);
+  }, [fetching]);
 
   const handleTicketClick = (ticketId) => {
     navigate(`/tickets/ticket/${ticketId}`);
   };
 
-  // Handle closing a ticket
   const handleCloseTicket = async (ticketId) => {
     try {
       await closeTicketAPI(ticketId);
@@ -47,6 +57,14 @@ export default function OpenTickets({ onTicketChange }) {
 
   if (error) {
     return <p className="text-danger">{error}</p>;
+  }
+
+  if (loading) {
+    return <p className="mt-5 pt-4 text-white">Loading tickets...</p>;
+  }
+
+  if (fetching) {
+    return null;
   }
 
   return (
@@ -81,13 +99,13 @@ export default function OpenTickets({ onTicketChange }) {
                         {truncateText(ticket.subject, 35)}
                       </strong>
                       <div className="d-flex">
-                        <small className="sub-text col-4">
+                        <strong className="sub-text col-12">
                           {ticket.category}
-                        </small>
+                        </strong>
                       </div>
                       <div className="d-md-none d-flex">
                         <img
-                          className="gameImg2 me-2"
+                          className="gameImg2 me-2 my-auto"
                           src={getGameImage(ticket.game)}
                           alt=""
                         />
