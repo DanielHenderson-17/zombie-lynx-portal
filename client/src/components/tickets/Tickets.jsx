@@ -26,9 +26,9 @@ export default function Tickets({ loggedInUser }) {
   }, []);
 
   return (
-    <div className="d-flex flex-column flex-lg-row ticket-container mt-md-5 mt-4">
+    <div className="d-flex flex-column flex-lg-row ticket-container">
       {/* Sidebar for Desktop Navigation */}
-      <div className="col-lg-3 border p-3 ticket-nav d-none d-lg-block">
+      <div className="col-lg-3 p-3 border ticket-nav d-none d-lg-block">
         <div>
           {/* New Ticket Button */}
           <Link
@@ -63,7 +63,7 @@ export default function Tickets({ loggedInUser }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow-1 mb-0">
+      <div className="flex-grow-1 mb-0 border">
         <Routes>
           <Route path="ticket/:ticketId/edit" element={<EditTicket />} />
           <Route

@@ -1,0 +1,13 @@
+.member-layout {
+  margin-top: 100px !important;
+  height: 85vh;
+}
+
+.member-header {
+  height: 230px;
+  background-color: #000000;
+}
+
+.member-nav {
+  background-color: #000000;
+}
