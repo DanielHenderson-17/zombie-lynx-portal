@@ -8,6 +8,7 @@ using System.Text;
 using ZombieLynxPortal.Models;
 using ZombieLynxPortal.Models.DTOs;
 using ZombieLynxPortal.Data;
+using System.Linq;
 
 namespace ZombieLynxPortal.Controllers;
 
@@ -94,7 +95,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("Me")]
-    // [Authorize]
+    [Authorize]
     public IActionResult Me()
     {
         var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

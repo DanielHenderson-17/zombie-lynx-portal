@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../managers/authManager";
 import { Button, FormFeedback, FormGroup, Input, Label } from "reactstrap";
+import SteamLoginButton from "../../components/auth/SteamLoginButton";
 
 export default function Login({ setLoggedInUser }) {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ export default function Login({ setLoggedInUser }) {
       <Button color="primary" onClick={handleSubmit}>
         Login
       </Button>
+      <SteamLoginButton />
       <p>
         Not signed up? Register <Link to="/register">here</Link>
       </p>

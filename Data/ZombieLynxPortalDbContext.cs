@@ -3,123 +3,183 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ZombieLynxPortal.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace ZombieLynxPortal.Data;
-public class ZombieLynxPortalDbContext : IdentityDbContext<IdentityUser>
+namespace ZombieLynxPortal.Data
 {
-    private readonly IConfiguration _configuration;
-    public DbSet<UserProfile> UserProfiles { get; set; }
-    public DbSet<Ticket> Tickets { get; set; }
-    public DbSet<Message> Messages { get; set; }
-    public DbSet<UserTicket> UserTickets { get; set; }
-    public DbSet<AdminTicket> AdminTickets { get; set; }
-    public DbSet<Notification> Notifications { get; set; }
-
-    public ZombieLynxPortalDbContext(DbContextOptions<ZombieLynxPortalDbContext> context, IConfiguration config) : base(context)
+    public class ZombieLynxPortalDbContext : IdentityDbContext<IdentityUser>
     {
-        _configuration = config;
-    }
+        private readonly IConfiguration _configuration;
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
+        // DbSets for all entities
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<UserTicket> UserTickets { get; set; }
+        public DbSet<AdminTicket> AdminTickets { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<IdentityUserRole<string>> UserRoles { get; set; }
+        public DbSet<ZLGMember> ZLGMembers { get; set; } // ✅ ZLGMembers Table
 
-        // Seed Roles
-        modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+        public ZombieLynxPortalDbContext(DbContextOptions<ZombieLynxPortalDbContext> context, IConfiguration config)
+            : base(context)
         {
-            Id = "c3aaeb97-d2ba-4a53-a521-4eea61e59b35",
-            Name = "Admin",
-            NormalizedName = "admin"
-        });
+            _configuration = config;
+        }
 
-        modelBuilder.Entity<IdentityUser>().HasData(new IdentityUser
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
-            UserName = "Administrator",
-            Email = "admina@strator.comx",
-            PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, _configuration["AdminPassword"])
-        });
+            base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
-        {
-            RoleId = "c3aaeb97-d2ba-4a53-a521-4eea61e59b35",
-            UserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f"
-        });
+            // ✅ Seed Roles
+            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            {
+                Id = "c3aaeb97-d2ba-4a53-a521-4eea61e59b35",
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            });
 
-        modelBuilder.Entity<UserProfile>().HasData(new UserProfile
-        {
-            Id = 1,
-            IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
-            FirstName = "Admina",
-            LastName = "Strator",
-            Address = "101 Main Street",
-        });
+            // ✅ Seed Admin User
+            modelBuilder.Entity<IdentityUser>().HasData(new IdentityUser
+            {
+                Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
+                UserName = "Administrator",
+                Email = "admina@strator.comx",
+                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, _configuration["AdminPassword"])
+            });
 
-        // Seed Tickets
-        modelBuilder.Entity<Ticket>().HasData(
-            new Ticket { Id = 1, UserProfileId = 1, Subject = "Bug Report", Category = "Gameplay", Game = "Game A", Server = "NA-East", Description = "My character is stuck!", Status = "Open", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
-        );
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+            {
+                RoleId = "c3aaeb97-d2ba-4a53-a521-4eea61e59b35",
+                UserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f"
+            });
 
-        // Seed Messages
-        modelBuilder.Entity<Message>().HasData(new Message
-        {
-            Id = 1,
-            TicketId = 1,
-            UserProfileId = 1,
-            Content = "This issue is urgent.",
-            CreatedAt = DateTime.UtcNow
-        });
+            // ✅ Seed User Profile
+            modelBuilder.Entity<UserProfile>().HasData(new UserProfile
+            {
+                Id = 1,
+                IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
+                FirstName = "Admina",
+                LastName = "Strator",
+                Address = "101 Main Street"
+            });
 
-        // Seed AdminTickets
-        modelBuilder.Entity<AdminTicket>().HasData(new AdminTicket
-        {
-            AdminId = 1,
-            TicketId = 1,
-            AssignedAt = DateTime.UtcNow
-        });
+            // ✅ Seed ZLGMembers
+            modelBuilder.Entity<ZLGMember>().HasData(
+                new ZLGMember
+                {
+                    Id = 1,
+                    SteamId = "76561198021051512",
+                    IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
+                    UserProfileId = 1,
+                    SteamName = "AdminSteam",
+                    DiscordId = "123456789012345678",
+                    DiscordName = "AdminDiscord",
+                    EosId = "eos-admin-id",
+                    EpicName = "AdminEpic"
+                },
+                new ZLGMember
+                {
+                    Id = 2,
+                    SteamId = "76561198012345678",
+                    IdentityUserId = "941e60e9-d226-4567-8b9a-56928ffbb160",
+                    UserProfileId = 2,
+                    SteamName = "TestUser",
+                    DiscordId = "987654321098765432",
+                    DiscordName = "TestDiscord",
+                    EosId = "eos-test-id",
+                    EpicName = "TestEpic"
+                }
+            );
 
-        // Seed Notifications
-        modelBuilder.Entity<Notification>().HasData(new Notification
-        {
-            Id = 1,
-            TicketId = 1,
-            UserProfileId = 1,
-            Type = new List<int> { 0, 1 },
-            SentAt = DateTime.UtcNow
-        });
+            // ✅ Seed Tickets
+            modelBuilder.Entity<Ticket>().HasData(new Ticket
+            {
+                Id = 1,
+                UserProfileId = 1,
+                Subject = "Bug Report",
+                Category = "Gameplay",
+                Game = "Game A",
+                Server = "NA-East",
+                Description = "My character is stuck!",
+                Status = "Open",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
 
-        // Relationships
-        modelBuilder.Entity<Ticket>()
-            .HasOne(t => t.UserProfile)
-            .WithMany()
-            .HasForeignKey(t => t.UserProfileId)
-            .OnDelete(DeleteBehavior.Cascade);
+            // ✅ Seed Messages
+            modelBuilder.Entity<Message>().HasData(new Message
+            {
+                Id = 1,
+                TicketId = 1,
+                UserProfileId = 1,
+                Content = "This issue is urgent.",
+                CreatedAt = DateTime.UtcNow
+            });
 
-        modelBuilder.Entity<Message>()
-            .HasOne(m => m.Ticket)
-            .WithMany()
-            .HasForeignKey(m => m.TicketId);
+            // ✅ Seed AdminTickets
+            modelBuilder.Entity<AdminTicket>().HasData(new AdminTicket
+            {
+                AdminId = 1,
+                TicketId = 1,
+                AssignedAt = DateTime.UtcNow
+            });
 
-        modelBuilder.Entity<Message>()
-            .HasOne(m => m.UserProfile)
-            .WithMany()
-            .HasForeignKey(m => m.UserProfileId);
+            // ✅ Seed Notifications
+            modelBuilder.Entity<Notification>().HasData(new Notification
+            {
+                Id = 1,
+                TicketId = 1,
+                UserProfileId = 1,
+                Type = new List<int> { 0, 1 },
+                SentAt = DateTime.UtcNow
+            });
 
-        modelBuilder.Entity<UserTicket>()
-            .HasKey(ut => new { ut.UserProfileId, ut.TicketId });
+            // ✅ Relationships
+            modelBuilder.Entity<Ticket>()
+                .HasOne(t => t.UserProfile)
+                .WithMany()
+                .HasForeignKey(t => t.UserProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<AdminTicket>()
-            .HasKey(at => new { at.AdminId, at.TicketId });
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Ticket)
+                .WithMany()
+                .HasForeignKey(m => m.TicketId);
 
-        modelBuilder.Entity<Notification>()
-            .HasOne(n => n.Ticket)
-            .WithMany()
-            .HasForeignKey(n => n.TicketId)
-            .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.UserProfile)
+                .WithMany()
+                .HasForeignKey(m => m.UserProfileId);
 
-        modelBuilder.Entity<Notification>()
-            .HasOne(n => n.UserProfile)
-            .WithMany()
-            .HasForeignKey(n => n.UserProfileId)
-            .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<UserTicket>()
+                .HasKey(ut => new { ut.UserProfileId, ut.TicketId });
+
+            modelBuilder.Entity<AdminTicket>()
+                .HasKey(at => new { at.AdminId, at.TicketId });
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Ticket)
+                .WithMany()
+                .HasForeignKey(n => n.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.UserProfile)
+                .WithMany()
+                .HasForeignKey(n => n.UserProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ✅ ZLGMember Relationships
+            modelBuilder.Entity<ZLGMember>()
+                .HasOne(z => z.UserProfile)
+                .WithMany()
+                .HasForeignKey(z => z.UserProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ZLGMember>()
+                .HasOne(z => z.IdentityUser)
+                .WithMany()
+                .HasForeignKey(z => z.IdentityUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

@@ -6,6 +6,7 @@ import Member from "../components/member/Member";
 import Tickets from "../components/tickets/Tickets";
 import Stats from "../components/stats/Stats";
 import Shop from "../components/shop/Shop";
+import LoginSuccess from "./auth/LoginSuccess";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -37,6 +38,11 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
         path="login"
         element={<Login setLoggedInUser={setLoggedInUser} />}
       />
+      <Route
+        path="/login-success"
+        element={<LoginSuccess setLoggedInUser={setLoggedInUser} />}
+      />
+
       <Route
         path="register"
         element={<Register setLoggedInUser={setLoggedInUser} />}

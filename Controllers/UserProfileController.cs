@@ -70,12 +70,13 @@ public class UserProfileController : ControllerBase
                 Email = up.IdentityUser.Email,
                 UserName = up.IdentityUser.UserName,
                 IdentityUserId = up.IdentityUserId,
-                Roles = _dbContext.UserRoles
+                Roles = _dbContext.Set<IdentityUserRole<string>>()
                     .Where(ur => ur.UserId == up.IdentityUserId)
                     .Select(ur => _dbContext.Roles.SingleOrDefault(r => r.Id == ur.RoleId).Name)
                     .ToList()
             })
-            .ToList();
+    .ToList();
+
 
         return Ok(profilesWithRoles);
     }
@@ -90,11 +91,12 @@ public class UserProfileController : ControllerBase
             return NotFound();
         }
 
-        _dbContext.UserRoles.Add(new IdentityUserRole<string>
+        _dbContext.Set<IdentityUserRole<string>>().Add(new IdentityUserRole<string>
         {
             RoleId = role.Id,
             UserId = id
         });
+
         _dbContext.SaveChanges();
         return NoContent();
     }
@@ -103,24 +105,30 @@ public class UserProfileController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult Demote(string id)
     {
-        IdentityRole role = _dbContext.Roles.SingleOrDefault(r => r.Name == "Admin");
+        // Fetch the Admin role
+        IdentityRole? role = _dbContext.Set<IdentityRole>().SingleOrDefault(r => r.Name == "Admin");
         if (role == null)
         {
-            return NotFound();
+            return NotFound("Admin role not found.");
         }
 
-        IdentityUserRole<string> userRole = _dbContext.UserRoles
+        // Safely fetch the user role
+        IdentityUserRole<string>? userRole = _dbContext.Set<IdentityUserRole<string>>()
             .SingleOrDefault(ur => ur.RoleId == role.Id && ur.UserId == id);
 
         if (userRole == null)
         {
-            return NotFound();
+            return NotFound("User does not have the Admin role.");
         }
 
-        _dbContext.UserRoles.Remove(userRole);
+        // Remove the user role
+        _dbContext.Set<IdentityUserRole<string>>().Remove(userRole);
         _dbContext.SaveChanges();
+
         return NoContent();
     }
+
+
 
     [HttpGet("all")]
     [Authorize(Roles = "Admin")]

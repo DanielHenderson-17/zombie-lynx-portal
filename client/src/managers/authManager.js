@@ -21,9 +21,26 @@ export const logout = () => {
 };
 
 export const tryGetLoggedInUser = () => {
-  return fetch(_apiUrl + "/me").then((res) => {
-    return res.status === 401 ? Promise.resolve(null) : res.json();
-  });
+  return fetch("/api/auth/me", {
+    method: "GET",
+    credentials: "include", // ✅ This sends the auth cookie
+  })
+    .then((res) => {
+      if (res.status === 401) {
+        return Promise.resolve(null);
+      }
+      if (!res.ok) {
+        return res.text().then((text) => {
+          console.error("Error fetching user:", text);
+          return Promise.resolve(null);
+        });
+      }
+      return res.json();
+    })
+    .catch((err) => {
+      console.error("Error fetching logged-in user:", err);
+      return Promise.resolve(null);
+    });
 };
 
 export const register = (userProfile) => {
