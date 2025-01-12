@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ZombieLynxPortal.Models.DTOs
 {
     public class ZLGMemberDTO
@@ -9,6 +13,14 @@ namespace ZombieLynxPortal.Models.DTOs
         public string EpicName { get; set; }  // ✅ Added EpicName
         public string DiscordId { get; set; }
         public string DiscordName { get; set; }  // ✅ Added DiscordName
+        [MaxLength(250)]
+        public string SteamImgUrl { get; set; }
+
+        [MaxLength(250)]
+        public string DiscordImgUrl { get; set; }
+
+        [MaxLength(250)]
+        public string EpicImgUrl { get; set; }
         public string IdentityUserId { get; set; }
         public int UserProfileId { get; set; }
 

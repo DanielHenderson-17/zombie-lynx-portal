@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides;
+using ZombieLynxPortal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,9 +34,11 @@ builder.Services.AddCors(options =>
 // 🔑 Configure Cookie Behavior for Cross-Origin Authentication
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.SameSite = SameSiteMode.None;  // ✅ Allow cross-origin cookies
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;  // ✅ Force HTTPS
-    options.Cookie.HttpOnly = true;  // ✅ Protect against XSS
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax; // Ensure session persists across domains
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 // Authentication setup
@@ -68,7 +71,7 @@ builder.Services.AddAuthentication(options =>
 .AddSteam(options =>
 {
     options.ApplicationKey = builder.Configuration["Authentication:Steam:ApiKey"];
-    options.CallbackPath = "/signin-steam";
+    options.CallbackPath = "/link-steam";
     options.Events.OnRemoteFailure = context =>
     {
         context.Response.Redirect("/error?message=" + context.Failure?.Message);
@@ -124,6 +127,9 @@ builder.Services.AddIdentityCore<IdentityUser>(config =>
 // PostgreSQL database connection
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddNpgsql<ZombieLynxPortalDbContext>(builder.Configuration["ZombieLynxPortalDbConnectionString"]);
+
+// ✅ Tebex API Configuration
+builder.Services.AddHttpClient<ZombieLynxPortal.Services.ITebexApiService, ZombieLynxPortal.Services.TebexApiService>();
 
 var app = builder.Build();
 

@@ -71,10 +71,13 @@ namespace ZombieLynxPortal.Data
                     IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                     UserProfileId = 1,
                     SteamName = "AdminSteam",
+                    SteamImgUrl = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/adm/adminsteam.jpg",
                     DiscordId = "123456789012345678",
                     DiscordName = "AdminDiscord",
+                    DiscordImgUrl = "https://cdn.discordapp.com/avatars/123456789012345678/admin-discord.png",
                     EosId = "eos-admin-id",
-                    EpicName = "AdminEpic"
+                    EpicName = "AdminEpic",
+                    EpicImgUrl = "https://static.epicgames.com/admin-epic-avatar.png"
                 },
                 new ZLGMember
                 {
@@ -83,10 +86,13 @@ namespace ZombieLynxPortal.Data
                     IdentityUserId = "941e60e9-d226-4567-8b9a-56928ffbb160",
                     UserProfileId = 2,
                     SteamName = "TestUser",
+                    SteamImgUrl = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/test/testuser.jpg",
                     DiscordId = "987654321098765432",
                     DiscordName = "TestDiscord",
+                    DiscordImgUrl = "https://cdn.discordapp.com/avatars/987654321098765432/test-discord.png",
                     EosId = "eos-test-id",
-                    EpicName = "TestEpic"
+                    EpicName = "TestEpic",
+                    EpicImgUrl = "https://static.epicgames.com/test-epic-avatar.png"
                 }
             );
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZombieLynxPortal.Data;
@@ -12,9 +13,11 @@ using ZombieLynxPortal.Data;
 namespace ZombieLynxPortal.Migrations
 {
     [DbContext(typeof(ZombieLynxPortalDbContext))]
-    partial class ZombieLynxPortalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250112061136_zlgmemberupdate")]
+    partial class zlgmemberupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,13 +153,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "84bd5a4b-d049-4385-8317-1aaec9498fe2",
+                            ConcurrencyStamp = "02d35709-7106-4f3a-9208-11cb2396fe53",
                             Email = "admina@strator.comx",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEJBH5OuckRVlD9unSBh4LzYkCYZ6mhPvqFXZQAypHoiP2F0xt8oFWhe2g8CY+WtbQQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEONOz9/lcaFK3fVMPOuz0JdLCCjCybuI5P9RpnHIO+ax91YDtIp0rHmGo5UWft74Ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "91cb423b-ef12-40ef-8466-96b5cfdf8a22",
+                            SecurityStamp = "059e7dd8-e1f7-4b38-86a4-3d2b2ce4c613",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });
@@ -272,7 +275,7 @@ namespace ZombieLynxPortal.Migrations
                         {
                             AdminId = 1,
                             TicketId = 1,
-                            AssignedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1416)
+                            AssignedAt = new DateTime(2025, 1, 12, 6, 11, 36, 294, DateTimeKind.Utc).AddTicks(6944)
                         });
                 });
 
@@ -310,7 +313,7 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = 1,
                             Content = "This issue is urgent.",
-                            CreatedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1395),
+                            CreatedAt = new DateTime(2025, 1, 12, 6, 11, 36, 294, DateTimeKind.Utc).AddTicks(6923),
                             TicketId = 1,
                             UserProfileId = 1
                         });
@@ -349,7 +352,7 @@ namespace ZombieLynxPortal.Migrations
                         new
                         {
                             Id = 1,
-                            SentAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1438),
+                            SentAt = new DateTime(2025, 1, 12, 6, 11, 36, 294, DateTimeKind.Utc).AddTicks(6966),
                             TicketId = 1,
                             Type = new List<int> { 0, 1 },
                             UserProfileId = 1
@@ -408,13 +411,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = 1,
                             Category = "Gameplay",
-                            CreatedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1336),
+                            CreatedAt = new DateTime(2025, 1, 12, 6, 11, 36, 294, DateTimeKind.Utc).AddTicks(6865),
                             Description = "My character is stuck!",
                             Game = "Game A",
                             Server = "NA-East",
                             Status = "Open",
                             Subject = "Bug Report",
-                            UpdatedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1337),
+                            UpdatedAt = new DateTime(2025, 1, 12, 6, 11, 36, 294, DateTimeKind.Utc).AddTicks(6866),
                             UserProfileId = 1
                         });
                 });
@@ -487,26 +490,32 @@ namespace ZombieLynxPortal.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DiscordId")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("DiscordImgUrl")
+                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
                     b.Property<string>("DiscordName")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("EosId")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("EpicImgUrl")
+                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
                     b.Property<string>("EpicName")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -515,14 +524,17 @@ namespace ZombieLynxPortal.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SteamId")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("SteamImgUrl")
+                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
                     b.Property<string>("SteamName")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 

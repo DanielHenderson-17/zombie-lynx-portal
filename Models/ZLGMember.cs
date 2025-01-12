@@ -10,22 +10,30 @@ namespace ZombieLynxPortal.Models
         public int Id { get; set; }
 
         [MaxLength(100)]
-        public string SteamId { get; set; }
+        public string? SteamId { get; set; } 
 
         [MaxLength(100)]
-        public string SteamName { get; set; }  // ✅ Added SteamName
+        public string? SteamName { get; set; } 
+        [MaxLength(250)]
+        public string? SteamImgUrl { get; set; }
 
         [MaxLength(100)]
-        public string EosId { get; set; }
+        public string? EosId { get; set; }
 
         [MaxLength(100)]
-        public string EpicName { get; set; }  // ✅ Added EpicName
+        public string? EpicName { get; set; }
+
+        [MaxLength(250)]
+        public string? EpicImgUrl { get; set; }
 
         [MaxLength(100)]
-        public string DiscordId { get; set; }
+        public string? DiscordId { get; set; }
 
         [MaxLength(100)]
-        public string DiscordName { get; set; }  // ✅ Added DiscordName
+        public string? DiscordName { get; set; }
+
+        [MaxLength(250)]
+        public string? DiscordImgUrl { get; set; }
 
         [Required]
         public string IdentityUserId { get; set; }

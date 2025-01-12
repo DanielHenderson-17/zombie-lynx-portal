@@ -1,13 +1,68 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { linkSteamAccount, getLinkedSteamAccount } from "../../managers/steamAuthManager";
 import "../../assets/styles/Member.css";
 
 export default function Member({ loggedInUser }) {
+  const [steamAccount, setSteamAccount] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch linked Steam account when component loads
+  useEffect(() => {
+    if (loggedInUser) {
+      getLinkedSteamAccount()
+        .then((data) => {
+          setSteamAccount(data && data.steamId ? data : null);  // Null check for Steam ID
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch linked Steam account:", err);
+          setLoading(false);
+        });
+    }
+  }, [loggedInUser]);
+
+  // ✅ Handle "Link Steam" button click
+  // ✅ Handle "Link Steam" button click
+const handleLinkSteam = () => {
+  linkSteamAccount().then(() => {
+    getLinkedSteamAccount()
+      .then((data) => {
+        setSteamAccount(data && data.steamId ? data : null);  // Null check for Steam ID
+        console.log("🟢 Updated Steam account in state:", data);  // LOG HERE
+      })
+      .catch((err) => console.error("Failed to refresh Steam account data:", err));
+  });
+};
+
+
   return (
     <div className="member-layout border mt-5 w-100 px-0">
       {/* Member Header */}
       <div className="member-header">
         <h1>Welcome, {loggedInUser?.username || "Member"}!</h1>
         <p>Manage your account and navigate through the system below.</p>
+      </div>
+
+      {/* ✅ Link Steam Section */}
+      <div className="d-flex align-items-center mb-3">
+        <button className="btn btn-primary me-3" onClick={handleLinkSteam}>
+          {steamAccount ? "Update Steam Link" : "Link Steam Account"}
+        </button>
+        {loading ? (
+          <p>Loading Steam account...</p>
+        ) : steamAccount ? (
+          <div className="d-flex align-items-center">
+            <img
+              src={steamAccount.steamImgUrl}
+              alt="Steam Profile"
+              style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" }}
+            />
+            <span className="text-white">{steamAccount.steamName}</span>
+          </div>
+        ) : (
+          <p className="text-white">No Steam account linked.</p>
+        )}
       </div>
 
       {/* Navigation */}
@@ -53,13 +108,12 @@ export default function Member({ loggedInUser }) {
           >
             Notifications
           </NavLink>
-          {/* Add more links here */}
         </div>
       </nav>
 
       {/* Dynamic Content */}
       <div className="member-content">
-        <Outlet /> {/* This will render subroutes dynamically */}
+        <Outlet />
       </div>
     </div>
   );

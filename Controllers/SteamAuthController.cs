@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using ZombieLynxPortal.Data;
 using ZombieLynxPortal.Models;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -32,6 +31,7 @@ namespace ZombieLynxPortal.Controllers
             _configuration = configuration;
         }
 
+        // ✅ Health check
         [HttpGet("ping")]
         public IActionResult Ping()
         {
@@ -39,135 +39,115 @@ namespace ZombieLynxPortal.Controllers
             return Ok("SteamAuthController is active.");
         }
 
+        // 🔑 Initiates Steam login for linking
         [HttpGet("login")]
+        [Authorize]
         public IActionResult Login()
         {
-            _logger.LogInformation("Steam login initiated.");
+            _logger.LogInformation("Steam linking initiated.");
+
+            var aspNetUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(aspNetUserId))
+            {
+                _logger.LogError("No logged-in ASP.NET user.");
+                return Unauthorized("User must be logged in.");
+            }
 
             var properties = new AuthenticationProperties
             {
-                RedirectUri = "https://profile.zlg.gg:5001/api/SteamAuth/callback"
+                RedirectUri = "/api/SteamAuth/link-steam"
             };
+
+            properties.Items["AspNetUserId"] = aspNetUserId;
 
             return Challenge(properties, "Steam");
         }
 
-        [HttpGet("callback")]
+        // 🔄 Callback for linking Steam account
+        [HttpGet("link-steam")]
         [Authorize(AuthenticationSchemes = "Steam")]
-        public async Task<IActionResult> Callback()
+        public async Task<IActionResult> LinkSteam()
         {
-            _logger.LogInformation("Steam callback triggered.");
+            _logger.LogInformation("Steam link callback triggered.");
 
             var steamOpenId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             if (string.IsNullOrEmpty(steamOpenId))
             {
                 _logger.LogError("Steam ID not found in the callback.");
-                return Unauthorized("Steam login failed.");
+                return Unauthorized("Steam linking failed.");
             }
 
             var steamId = steamOpenId.Replace("https://steamcommunity.com/openid/id/", "");
             _logger.LogInformation($"Extracted Steam ID: {steamId}");
 
-            // Check if the IdentityUser exists
-            var user = await _userManager.FindByNameAsync($"steam_{steamId}");
-            if (user == null)
+            var result = await HttpContext.AuthenticateAsync("Steam");
+            if (!result.Succeeded || !result.Properties.Items.TryGetValue("AspNetUserId", out var aspNetUserId))
             {
-                var displayName = await GetSteamDisplayNameAsync(steamId) ?? "SteamUser";
-
-                user = new IdentityUser
-                {
-                    UserName = $"steam_{steamId}",
-                    Email = $"steam_{steamId}@steam.com"
-                };
-
-                var result = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
-
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        _logger.LogError($"Error creating user: {error.Code} - {error.Description}");
-                    }
-                    return StatusCode(500, "Failed to create user.");
-                }
-
-                _logger.LogInformation($"User {user.UserName} created successfully.");
+                _logger.LogError("No logged-in ASP.NET user found.");
+                return Unauthorized("User must be logged in.");
             }
 
-            // Check if UserProfile exists
-            var profile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == user.Id);
-            if (profile == null)
+            _logger.LogInformation($"Logged-in ASP.NET User ID: {aspNetUserId}");
+
+            var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == aspNetUserId);
+            if (userProfile == null)
             {
-                var displayName = await GetSteamDisplayNameAsync(steamId) ?? "SteamUser";
-
-                profile = new UserProfile
-                {
-                    IdentityUserId = user.Id,
-                    FirstName = displayName,
-                    LastName = "User",
-                    Address = "N/A"
-                };
-
-                _dbContext.UserProfiles.Add(profile);
-                await _dbContext.SaveChangesAsync();
-
-                _logger.LogInformation("User profile created successfully.");
+                _logger.LogError($"UserProfile not found for IdentityUserId: {aspNetUserId}");
+                return NotFound("User profile not found.");
             }
 
-            // ✅ Check if ZLGMember exists
-            var zlgMember = _dbContext.ZLGMembers.SingleOrDefault(m => m.IdentityUserId == user.Id);
-            if (zlgMember == null)
+            var (steamName, steamImgUrl) = await GetSteamProfileAsync(steamId);
+            if (steamName == null)
             {
-                var steamName = await GetSteamDisplayNameAsync(steamId) ?? "SteamUser";
+                _logger.LogError("Failed to fetch Steam profile data.");
+                return StatusCode(500, "Failed to fetch Steam data.");
+            }
 
-                zlgMember = new ZLGMember
+            var existingLink = _dbContext.ZLGMembers.SingleOrDefault(z => z.IdentityUserId == aspNetUserId);
+
+            if (existingLink == null)
+            {
+                var newLink = new ZLGMember
                 {
-                    IdentityUserId = user.Id,
-                    UserProfileId = profile.Id,
+                    IdentityUserId = aspNetUserId,
+                    UserProfileId = userProfile.Id,
                     SteamId = steamId,
                     SteamName = steamName,
-                    EosId = "",  // Placeholder for future Epic integration
-                    EpicName = "",
-                    DiscordId = "",  // Placeholder for future Discord integration
-                    DiscordName = ""
+                    SteamImgUrl = steamImgUrl,
+
+                    // ✅ Keep optional fields null until linked
+                    DiscordId = null,
+                    DiscordName = null,
+                    DiscordImgUrl = null,
+                    EosId = null,
+                    EpicName = null,
+                    EpicImgUrl = null
                 };
 
-                _dbContext.ZLGMembers.Add(zlgMember);
-                await _dbContext.SaveChangesAsync();
-
-                _logger.LogInformation("ZLGMember entry created successfully.");
+                _dbContext.ZLGMembers.Add(newLink);
+                _logger.LogInformation($"New Steam account linked for user {aspNetUserId}.");
+            }
+            else
+            {
+                existingLink.SteamId = steamId;
+                existingLink.SteamName = steamName;
+                existingLink.SteamImgUrl = steamImgUrl;
+                _logger.LogInformation($"Updated Steam account link for user {aspNetUserId}.");
             }
 
-            // Sign the user in
-            var claims = new List<Claim>
+            await _dbContext.SaveChangesAsync();
+
+            // ✅ Return the linked Steam account data to the frontend
+            return Ok(new
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
-
-            _logger.LogInformation($"User {user.UserName} signed in successfully.");
-
-            return Redirect("http://localhost:5176/login-success");
+                steamId = steamId,
+                steamName = steamName,
+                steamImgUrl = steamImgUrl
+            });
         }
 
-        [HttpGet("logout")]
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            _logger.LogInformation("User logged out successfully.");
-            return Ok("Logged out successfully.");
-        }
-
-        // 🔥 Helper method to fetch Steam display name
-        private async Task<string?> GetSteamDisplayNameAsync(string steamId)
+        // 🔥 Helper method to fetch Steam profile data
+        private async Task<(string? SteamName, string? SteamImgUrl)> GetSteamProfileAsync(string steamId)
         {
             var steamApiKey = _configuration["Authentication:Steam:ApiKey"];
             var url = $"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={steamApiKey}&steamids={steamId}";
@@ -177,8 +157,8 @@ namespace ZombieLynxPortal.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to fetch Steam display name for Steam ID: {steamId}");
-                return null;
+                _logger.LogError($"Failed to fetch Steam profile for Steam ID: {steamId}");
+                return (null, null);
             }
 
             var content = await response.Content.ReadAsStringAsync();
@@ -189,7 +169,39 @@ namespace ZombieLynxPortal.Controllers
                              .EnumerateArray()
                              .FirstOrDefault();
 
-            return player.GetProperty("personaname").GetString();
+            var steamName = player.GetProperty("personaname").GetString();
+            var steamImgUrl = player.GetProperty("avatarfull").GetString();
+
+            return (steamName, steamImgUrl);
+        }
+
+        // ✅ Fetch linked Steam account for the logged-in user
+        [HttpGet("linked")]
+        [Authorize]
+        public IActionResult GetLinkedSteamAccount()
+        {
+            var aspNetUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(aspNetUserId))
+            {
+                return Unauthorized("User must be logged in.");
+            }
+
+            var linkedAccount = _dbContext.ZLGMembers
+                .Where(z => z.IdentityUserId == aspNetUserId && z.SteamId != null)
+                .Select(z => new
+                {
+                    steamId = z.SteamId,
+                    steamName = z.SteamName,
+                    steamImgUrl = z.SteamImgUrl
+                })
+                .FirstOrDefault();
+
+            if (linkedAccount == null)
+            {
+                return NotFound("No Steam account linked.");
+            }
+
+            return Ok(linkedAccount);
         }
     }
 }
