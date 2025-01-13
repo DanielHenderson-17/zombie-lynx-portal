@@ -31,14 +31,13 @@ builder.Services.AddCors(options =>
                           .AllowCredentials());  // 🔑 Must allow credentials
 });
 
-// 🔑 Configure Cookie Behavior for Cross-Origin Authentication
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
     options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.Lax; // Ensure session persists across domains
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensures cookies are sent over HTTPS
+    options.Cookie.SameSite = SameSiteMode.None; // Allows cookies in popups and iframes
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
+    options.SlidingExpiration = true;
 });
 
 // Authentication setup
@@ -56,6 +55,7 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
+    options.LoginPath = "/api/SteamAuth/login";
 
     options.Events.OnRedirectToLogin = context =>
     {

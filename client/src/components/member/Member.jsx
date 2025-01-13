@@ -1,54 +1,50 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { linkSteamAccount, getLinkedSteamAccount } from "../../managers/steamAuthManager";
+import { linkSteamAccount, unlinkSteamAccount, getLinkedSteamAccount } from "../../managers/steamAuthManager";
 import "../../assets/styles/Member.css";
 
 export default function Member({ loggedInUser }) {
   const [steamAccount, setSteamAccount] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch linked Steam account when component loads
   useEffect(() => {
     if (loggedInUser) {
       getLinkedSteamAccount()
         .then((data) => {
-          setSteamAccount(data && data.steamId ? data : null);  // Null check for Steam ID
+          setSteamAccount(data?.steamId ? data : null);
           setLoading(false);
         })
-        .catch((err) => {
-          console.error("Failed to fetch linked Steam account:", err);
-          setLoading(false);
-        });
+        .catch(() => setLoading(false));
+    } else {
+      setSteamAccount(null);
+      setLoading(false);
     }
   }, [loggedInUser]);
 
-  // ✅ Handle "Link Steam" button click
-  // ✅ Handle "Link Steam" button click
-const handleLinkSteam = () => {
-  linkSteamAccount().then(() => {
-    getLinkedSteamAccount()
-      .then((data) => {
-        setSteamAccount(data && data.steamId ? data : null);  // Null check for Steam ID
-        console.log("🟢 Updated Steam account in state:", data);  // LOG HERE
-      })
-      .catch((err) => console.error("Failed to refresh Steam account data:", err));
-  });
-};
+  const handleLinkSteam = () => linkSteamAccount(setSteamAccount);
 
+  const handleUnlinkSteam = () =>
+    unlinkSteamAccount(loggedInUser.id)
+      .then(() => setSteamAccount(null))
+      .catch(console.error);
+
+  
 
   return (
     <div className="member-layout border mt-5 w-100 px-0">
-      {/* Member Header */}
       <div className="member-header">
         <h1>Welcome, {loggedInUser?.username || "Member"}!</h1>
         <p>Manage your account and navigate through the system below.</p>
       </div>
 
-      {/* ✅ Link Steam Section */}
       <div className="d-flex align-items-center mb-3">
-        <button className="btn btn-primary me-3" onClick={handleLinkSteam}>
-          {steamAccount ? "Update Steam Link" : "Link Steam Account"}
+        <button
+          className={`btn me-3 ${steamAccount ? "btn-danger" : "btn-primary"}`}
+          onClick={steamAccount ? handleUnlinkSteam : handleLinkSteam}
+        >
+          {steamAccount ? "Unlink Steam Account" : "Link Steam Account"}
         </button>
+
         {loading ? (
           <p>Loading Steam account...</p>
         ) : steamAccount ? (
@@ -65,15 +61,12 @@ const handleLinkSteam = () => {
         )}
       </div>
 
-      {/* Navigation */}
       <nav className="d-flex justify-content-start member-nav">
         <div className="col-6 d-flex justify-content-end">
           <NavLink
             to="stats"
             className={({ isActive }) =>
-              `mx-4 text-white text-decoration-none ${
-                isActive ? "border-bottom border-danger border-5" : ""
-              }`
+              `mx-4 text-white text-decoration-none ${isActive ? "border-bottom border-danger border-5" : ""}`
             }
           >
             Stats
@@ -81,9 +74,7 @@ const handleLinkSteam = () => {
           <NavLink
             to="shop"
             className={({ isActive }) =>
-              `me-4 text-white text-decoration-none ${
-                isActive ? "border-bottom border-danger border-5" : ""
-              }`
+              `me-4 text-white text-decoration-none ${isActive ? "border-bottom border-danger border-5" : ""}`
             }
           >
             Shop
@@ -91,9 +82,7 @@ const handleLinkSteam = () => {
           <NavLink
             to="tickets"
             className={({ isActive }) =>
-              `text-white text-decoration-none me-4 ${
-                isActive ? "border-bottom border-danger border-5" : ""
-              }`
+              `text-white text-decoration-none me-4 ${isActive ? "border-bottom border-danger border-5" : ""}`
             }
           >
             Tickets
@@ -101,9 +90,7 @@ const handleLinkSteam = () => {
           <NavLink
             to="notifications"
             className={({ isActive }) =>
-              `text-white text-decoration-none ${
-                isActive ? "border-bottom border-danger border-5" : ""
-              }`
+              `text-white text-decoration-none ${isActive ? "border-bottom border-danger border-5" : ""}`
             }
           >
             Notifications
@@ -111,7 +98,6 @@ const handleLinkSteam = () => {
         </div>
       </nav>
 
-      {/* Dynamic Content */}
       <div className="member-content">
         <Outlet />
       </div>

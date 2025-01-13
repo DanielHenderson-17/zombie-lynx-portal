@@ -1,72 +1,87 @@
 const _authUrl = "/api/SteamAuth";
 
-// ✅ Opens a popup for Steam account linking and logs the Steam data
-export const linkSteamAccount = () => {
-  console.log("🟢 User clicked the 'Link Steam' button.");
+export const getAllSteamUsers = () => {
+  return fetch(`${_authUrl}/all-steam-users`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch Steam users.");
+      }
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching all Steam users:", error);
+      throw error;
+    });
+};
 
+export const linkSteamAccount = (onWindowClose) => {
   const steamWindow = window.open(
     "/api/SteamAuth/login",
     "Steam Login",
     "width=600,height=800"
   );
 
+  const handleMessage = (event) => {
+    if (event.data === "steamLinked") {
+      getLinkedSteamAccount().finally(() => {
+        window.removeEventListener("message", handleMessage);
+      });
+    }
+  };
+
+  window.addEventListener("message", handleMessage);
+
   const checkWindowClosed = setInterval(() => {
     if (steamWindow.closed) {
       clearInterval(checkWindowClosed);
-      console.log("🟡 User completed Steam login and popup closed.");
-
-      // ✅ Fetch updated Steam data and log it
-      getLinkedSteamAccount()
-        .then((data) => {
-          console.log("🟢 Steam account successfully linked:", data);  // LOG HERE
-        })
-        .catch((err) =>
-          console.error("🔴 Failed to fetch Steam data after linking:", err)
-        );
+      window.removeEventListener("message", handleMessage);
+      onWindowClose && onWindowClose();
     }
   }, 500);
 };
 
-// ✅ Fetch linked Steam account data
-export const getLinkedSteamAccount = () => {
-  return fetch(`${_authUrl}/linked`, {
-    method: "GET",
+export const unlinkSteamAccount = (identityUserId) => {
+  return fetch(`${_authUrl}/unlink`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
     credentials: "include",
+    body: JSON.stringify({ identityUserId }),
   }).then((res) => {
-    if (!res.ok) {
-      throw new Error("Failed to fetch linked Steam account.");
-    }
-    return res.json();
+    if (!res.ok) throw new Error("Failed to unlink Steam account.");
+    return res.text();
   });
 };
 
-// Existing Steam login (unchanged)
+export const getLinkedSteamAccount = () => {
+  return new Promise((resolve) => setTimeout(resolve, 500)).then(() =>
+    fetch(`/api/SteamAuth/linked?cacheBust=${Date.now()}`, {
+      method: "GET",
+      credentials: "include",
+    }).then((res) => {
+      if (!res.ok) throw new Error(`Failed to fetch linked Steam account. Status: ${res.status}`);
+      return res.json();
+    })
+  );
+};
+
 export const steamLogin = () => {
   window.location.href = `${_authUrl}/login`;
 };
 
-// Existing Steam logout (unchanged)
 export const steamLogout = () => {
   return fetch(`${_authUrl}/logout`, {
     method: "GET",
     credentials: "include",
   }).then((res) => {
-    if (!res.ok) {
-      throw new Error("Failed to logout.");
-    }
+    if (!res.ok) throw new Error("Failed to logout.");
   });
 };
 
-// Existing Steam authentication check (unchanged)
 export const checkSteamAuth = () => {
   return fetch(`${_authUrl}/ping`)
     .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to check Steam authentication.");
-      }
+      if (!res.ok) throw new Error("Failed to check Steam authentication.");
       return res.text();
     })
-    .catch((err) => {
-      console.error("Error checking Steam authentication:", err);
-    });
+    .catch(() => {});
 };

@@ -22,9 +22,6 @@ export const getPackages = async () => {
   }
 };
 
-
-console.log("Tebex Public Key:", PUBLIC_KEY);
-
 export const createBasket = async (completeUrl, cancelUrl) => {
   try {
     const response = await tebexService.post("/baskets", {
