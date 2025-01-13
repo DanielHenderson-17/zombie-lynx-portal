@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZombieLynxPortal.Data;
@@ -12,9 +13,11 @@ using ZombieLynxPortal.Data;
 namespace ZombieLynxPortal.Migrations
 {
     [DbContext(typeof(ZombieLynxPortalDbContext))]
-    partial class ZombieLynxPortalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250113160310_InitialCreateMVP")]
+    partial class InitialCreateMVP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,13 +153,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e738bb89-ac12-42df-bcf8-9559a4460f3d",
+                            ConcurrencyStamp = "853727c8-8aa1-4ac1-a8db-62e0bd5f3505",
                             Email = "admina@strator.comx",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEFS/bnpDAk44OkP23i+Xcm1jDvvpT9C1nAcmqFgOkFbcb7VccrUhkIDv6CRI2YCkQg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEL1DS+XEkYH5xPWS1OorxR1U4/ZEHz5gF8Y5c26C0wqQ/wXgQ3suQAqL/+2vk22CPw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1ceaf538-5945-43c1-b59b-846d9644de91",
+                            SecurityStamp = "8caa4bd3-17a5-455e-ac24-b94fcee3f9ca",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });
@@ -272,7 +275,7 @@ namespace ZombieLynxPortal.Migrations
                         {
                             AdminId = 1,
                             TicketId = 1,
-                            AssignedAt = new DateTime(2025, 1, 13, 16, 12, 1, 506, DateTimeKind.Utc).AddTicks(6002)
+                            AssignedAt = new DateTime(2025, 1, 13, 16, 3, 10, 157, DateTimeKind.Utc).AddTicks(433)
                         });
                 });
 
@@ -310,7 +313,7 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = 1,
                             Content = "This issue is urgent.",
-                            CreatedAt = new DateTime(2025, 1, 13, 16, 12, 1, 506, DateTimeKind.Utc).AddTicks(5982),
+                            CreatedAt = new DateTime(2025, 1, 13, 16, 3, 10, 157, DateTimeKind.Utc).AddTicks(415),
                             TicketId = 1,
                             UserProfileId = 1
                         });
@@ -349,7 +352,7 @@ namespace ZombieLynxPortal.Migrations
                         new
                         {
                             Id = 1,
-                            SentAt = new DateTime(2025, 1, 13, 16, 12, 1, 506, DateTimeKind.Utc).AddTicks(6028),
+                            SentAt = new DateTime(2025, 1, 13, 16, 3, 10, 157, DateTimeKind.Utc).AddTicks(464),
                             TicketId = 1,
                             Type = new List<int> { 0, 1 },
                             UserProfileId = 1
@@ -408,13 +411,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = 1,
                             Category = "Gameplay",
-                            CreatedAt = new DateTime(2025, 1, 13, 16, 12, 1, 506, DateTimeKind.Utc).AddTicks(5856),
+                            CreatedAt = new DateTime(2025, 1, 13, 16, 3, 10, 157, DateTimeKind.Utc).AddTicks(346),
                             Description = "My character is stuck!",
                             Game = "Game A",
                             Server = "NA-East",
                             Status = "Open",
                             Subject = "Bug Report",
-                            UpdatedAt = new DateTime(2025, 1, 13, 16, 12, 1, 506, DateTimeKind.Utc).AddTicks(5858),
+                            UpdatedAt = new DateTime(2025, 1, 13, 16, 3, 10, 157, DateTimeKind.Utc).AddTicks(347),
                             UserProfileId = 1
                         });
                 });
