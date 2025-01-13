@@ -174,7 +174,7 @@ public class TicketsController : ControllerBase
 
     // Retrieves all users (Admin only)
     [HttpGet("users")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public IActionResult GetUsers()
     {
         var users = _dbContext.UserProfiles.Select(up => new

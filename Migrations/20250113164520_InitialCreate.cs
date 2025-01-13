@@ -208,6 +208,41 @@ namespace ZombieLynxPortal.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ZLGMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SteamId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    SteamName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    SteamImgUrl = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
+                    EosId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    EpicName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    EpicImgUrl = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
+                    DiscordId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    DiscordName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    DiscordImgUrl = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
+                    IdentityUserId = table.Column<string>(type: "text", nullable: false),
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ZLGMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ZLGMembers_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ZLGMembers_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AdminTickets",
                 columns: table => new
                 {
@@ -316,12 +351,12 @@ namespace ZombieLynxPortal.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "c3aaeb97-d2ba-4a53-a521-4eea61e59b35", null, "Admin", "admin" });
+                values: new object[] { "c3aaeb97-d2ba-4a53-a521-4eea61e59b35", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "5ae3d5a8-6870-438c-b6d7-4d2a0a7bc501", "admina@strator.comx", false, false, null, null, null, "AQAAAAIAAYagAAAAEODCFY9nGSBnV9OMcX5L1STNnFUxmI2l+3WAmmp6yuXYovZeNGrDZTPpL3kxyemmfA==", null, false, "b1c66abd-176f-4c5c-8400-be5666e8c80f", false, "Administrator" });
+                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "49cb886d-df40-4665-8dcd-6648dc5c341e", "admina@strator.comx", false, false, null, null, null, "AQAAAAIAAYagAAAAELNGdzwBTBNSe953wEZLKSRQSATfpLzryipoO1b2z1tgDIWZ7OdMcAyWVTyTEZok2A==", null, false, "b0ed370f-24a9-41f4-9912-4d63b382aacd", false, "Administrator" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -336,22 +371,27 @@ namespace ZombieLynxPortal.Migrations
             migrationBuilder.InsertData(
                 table: "Tickets",
                 columns: new[] { "Id", "Category", "CreatedAt", "Description", "Game", "Server", "Status", "Subject", "UpdatedAt", "UserProfileId" },
-                values: new object[] { 1, "Gameplay", new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(432), "My character is stuck!", "Game A", "NA-East", "Open", "Bug Report", new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(433), 1 });
+                values: new object[] { 1, "Gameplay", new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3222), "My character is stuck!", "Game A", "NA-East", "Open", "Bug Report", new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3224), 1 });
+
+            migrationBuilder.InsertData(
+                table: "ZLGMembers",
+                columns: new[] { "Id", "DiscordId", "DiscordImgUrl", "DiscordName", "EosId", "EpicImgUrl", "EpicName", "IdentityUserId", "SteamId", "SteamImgUrl", "SteamName", "UserProfileId" },
+                values: new object[] { 1, "123456789012345678", "https://cdn.discordapp.com/avatars/123456789012345678/admin-discord.png", "AdminDiscord", "eos-admin-id", "https://static.epicgames.com/admin-epic-avatar.png", "AdminEpic", "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", "76561198021051512", "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/adm/adminsteam.jpg", "AdminSteam", 1 });
 
             migrationBuilder.InsertData(
                 table: "AdminTickets",
                 columns: new[] { "AdminId", "TicketId", "AssignedAt" },
-                values: new object[] { 1, 1, new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(500) });
+                values: new object[] { 1, 1, new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3291) });
 
             migrationBuilder.InsertData(
                 table: "Messages",
                 columns: new[] { "Id", "Content", "CreatedAt", "TicketId", "UserProfileId" },
-                values: new object[] { 1, "This issue is urgent.", new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(479), 1, 1 });
+                values: new object[] { 1, "This issue is urgent.", new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3274), 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "Notifications",
                 columns: new[] { "Id", "SentAt", "TicketId", "Type", "UserProfileId" },
-                values: new object[] { 1, new DateTime(2024, 12, 22, 5, 52, 53, 164, DateTimeKind.Utc).AddTicks(518), 1, new List<int> { 0, 1 }, 1 });
+                values: new object[] { 1, new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3312), 1, new List<int> { 0, 1 }, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdminTickets_TicketId",
@@ -429,6 +469,16 @@ namespace ZombieLynxPortal.Migrations
                 name: "IX_UserTickets_TicketId",
                 table: "UserTickets",
                 column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ZLGMembers_IdentityUserId",
+                table: "ZLGMembers",
+                column: "IdentityUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ZLGMembers_UserProfileId",
+                table: "ZLGMembers",
+                column: "UserProfileId");
         }
 
         /// <inheritdoc />
@@ -460,6 +510,9 @@ namespace ZombieLynxPortal.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserTickets");
+
+            migrationBuilder.DropTable(
+                name: "ZLGMembers");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -78,21 +78,6 @@ namespace ZombieLynxPortal.Data
                     EosId = "eos-admin-id",
                     EpicName = "AdminEpic",
                     EpicImgUrl = "https://static.epicgames.com/admin-epic-avatar.png"
-                },
-                new ZLGMember
-                {
-                    Id = 2,
-                    SteamId = "76561198012345678",
-                    IdentityUserId = "941e60e9-d226-4567-8b9a-56928ffbb160",
-                    UserProfileId = 2,
-                    SteamName = "TestUser",
-                    SteamImgUrl = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/test/testuser.jpg",
-                    DiscordId = "987654321098765432",
-                    DiscordName = "TestDiscord",
-                    DiscordImgUrl = "https://cdn.discordapp.com/avatars/987654321098765432/test-discord.png",
-                    EosId = "eos-test-id",
-                    EpicName = "TestEpic",
-                    EpicImgUrl = "https://static.epicgames.com/test-epic-avatar.png"
                 }
             );
 

@@ -131,7 +131,7 @@ public class UserProfileController : ControllerBase
 
 
     [HttpGet("all")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public IActionResult GetAllUsers()
     {
         // Fetch all users from IdentityUser

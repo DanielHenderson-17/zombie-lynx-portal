@@ -150,13 +150,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "84bd5a4b-d049-4385-8317-1aaec9498fe2",
+                            ConcurrencyStamp = "49cb886d-df40-4665-8dcd-6648dc5c341e",
                             Email = "admina@strator.comx",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEJBH5OuckRVlD9unSBh4LzYkCYZ6mhPvqFXZQAypHoiP2F0xt8oFWhe2g8CY+WtbQQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELNGdzwBTBNSe953wEZLKSRQSATfpLzryipoO1b2z1tgDIWZ7OdMcAyWVTyTEZok2A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "91cb423b-ef12-40ef-8466-96b5cfdf8a22",
+                            SecurityStamp = "b0ed370f-24a9-41f4-9912-4d63b382aacd",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });
@@ -272,7 +272,7 @@ namespace ZombieLynxPortal.Migrations
                         {
                             AdminId = 1,
                             TicketId = 1,
-                            AssignedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1416)
+                            AssignedAt = new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3291)
                         });
                 });
 
@@ -310,7 +310,7 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = 1,
                             Content = "This issue is urgent.",
-                            CreatedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1395),
+                            CreatedAt = new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3274),
                             TicketId = 1,
                             UserProfileId = 1
                         });
@@ -349,7 +349,7 @@ namespace ZombieLynxPortal.Migrations
                         new
                         {
                             Id = 1,
-                            SentAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1438),
+                            SentAt = new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3312),
                             TicketId = 1,
                             Type = new List<int> { 0, 1 },
                             UserProfileId = 1
@@ -408,13 +408,13 @@ namespace ZombieLynxPortal.Migrations
                         {
                             Id = 1,
                             Category = "Gameplay",
-                            CreatedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1336),
+                            CreatedAt = new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3222),
                             Description = "My character is stuck!",
                             Game = "Game A",
                             Server = "NA-East",
                             Status = "Open",
                             Subject = "Bug Report",
-                            UpdatedAt = new DateTime(2025, 1, 12, 7, 16, 24, 531, DateTimeKind.Utc).AddTicks(1337),
+                            UpdatedAt = new DateTime(2025, 1, 13, 16, 45, 20, 465, DateTimeKind.Utc).AddTicks(3224),
                             UserProfileId = 1
                         });
                 });
@@ -552,21 +552,6 @@ namespace ZombieLynxPortal.Migrations
                             SteamImgUrl = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/adm/adminsteam.jpg",
                             SteamName = "AdminSteam",
                             UserProfileId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DiscordId = "987654321098765432",
-                            DiscordImgUrl = "https://cdn.discordapp.com/avatars/987654321098765432/test-discord.png",
-                            DiscordName = "TestDiscord",
-                            EosId = "eos-test-id",
-                            EpicImgUrl = "https://static.epicgames.com/test-epic-avatar.png",
-                            EpicName = "TestEpic",
-                            IdentityUserId = "941e60e9-d226-4567-8b9a-56928ffbb160",
-                            SteamId = "76561198012345678",
-                            SteamImgUrl = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/test/testuser.jpg",
-                            SteamName = "TestUser",
-                            UserProfileId = 2
                         });
                 });
 
