@@ -8,6 +8,10 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.AspNetCore.HttpOverrides;
 using ZombieLynxPortal.Services;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +45,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // Authentication setup
+// Authentication setup
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -50,7 +55,7 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
     options.Cookie.Name = "ZombieLynxPortalLoginCookie";
-    options.Cookie.SameSite = SameSiteMode.None;  // ✅ Matches the global setting
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
@@ -66,6 +71,20 @@ builder.Services.AddAuthentication(options =>
     {
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
         return Task.CompletedTask;
+    };
+})
+.AddJwtBearer("SteamJwt", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ClockSkew = TimeSpan.Zero
     };
 })
 .AddSteam(options =>

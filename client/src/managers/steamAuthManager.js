@@ -1,17 +1,41 @@
 const _authUrl = "/api/SteamAuth";
 
-export const getAllSteamUsers = () => {
-  return fetch(`${_authUrl}/all-steam-users`)
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch Steam users.");
-      }
-      return res.json();
-    })
-    .catch((error) => {
-      console.error("Error fetching all Steam users:", error);
-      throw error;
-    });
+export const setSteamJwtToken = (token) => {
+  localStorage.setItem("steam_jwt_token", token);
+};
+
+export const getSteamJwtToken = () => {
+  return localStorage.getItem("steam_jwt_token");
+};
+
+export const removeSteamJwtToken = () => {
+  localStorage.removeItem("steam_jwt_token");
+};
+
+export const isSteamJwtValid = () => {
+  const token = getSteamJwtToken();
+  if (!token) return false;
+
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const isExpired = payload.exp * 1000 < Date.now();
+
+  return !isExpired;
+};
+
+export const getLinkedSteamAccount = () => {
+  if (!isSteamJwtValid()) {
+    removeSteamJwtToken();
+    return Promise.resolve(null);
+  }
+
+  return fetch(`${_authUrl}/linked`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${getSteamJwtToken()}`,
+    },
+  })
+    .then((res) => (res.ok ? res.json() : null))
+    .catch(() => null);
 };
 
 export const linkSteamAccount = (onWindowClose) => {
@@ -22,7 +46,8 @@ export const linkSteamAccount = (onWindowClose) => {
   );
 
   const handleMessage = (event) => {
-    if (event.data === "steamLinked") {
+    if (event.data?.type === "steamLinked" && event.data?.token) {
+      setSteamJwtToken(event.data.token);
       getLinkedSteamAccount().finally(() => {
         window.removeEventListener("message", handleMessage);
       });
@@ -43,45 +68,14 @@ export const linkSteamAccount = (onWindowClose) => {
 export const unlinkSteamAccount = (identityUserId) => {
   return fetch(`${_authUrl}/unlink`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getSteamJwtToken()}`,
+    },
     body: JSON.stringify({ identityUserId }),
   }).then((res) => {
     if (!res.ok) throw new Error("Failed to unlink Steam account.");
+    removeSteamJwtToken();
     return res.text();
   });
-};
-
-export const getLinkedSteamAccount = () => {
-  return new Promise((resolve) => setTimeout(resolve, 500)).then(() =>
-    fetch(`/api/SteamAuth/linked?cacheBust=${Date.now()}`, {
-      method: "GET",
-      credentials: "include",
-    }).then((res) => {
-      if (!res.ok) throw new Error(`Failed to fetch linked Steam account. Status: ${res.status}`);
-      return res.json();
-    })
-  );
-};
-
-export const steamLogin = () => {
-  window.location.href = `${_authUrl}/login`;
-};
-
-export const steamLogout = () => {
-  return fetch(`${_authUrl}/logout`, {
-    method: "GET",
-    credentials: "include",
-  }).then((res) => {
-    if (!res.ok) throw new Error("Failed to logout.");
-  });
-};
-
-export const checkSteamAuth = () => {
-  return fetch(`${_authUrl}/ping`)
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to check Steam authentication.");
-      return res.text();
-    })
-    .catch(() => {});
 };
