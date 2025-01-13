@@ -163,7 +163,7 @@ public class TicketsController : ControllerBase
 
     // Retrieves options for ticket creation form (categories, games, servers)
     [HttpGet("options")]
-    [Authorize]
+
     public IActionResult GetOptions()
     {
         var categories = new[] { "Bug", "Shop Issue", "Connection Issue", "Other" };
@@ -174,7 +174,7 @@ public class TicketsController : ControllerBase
 
     // Retrieves all users (Admin only)
     [HttpGet("users")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public IActionResult GetUsers()
     {
         var users = _dbContext.UserProfiles.Select(up => new
